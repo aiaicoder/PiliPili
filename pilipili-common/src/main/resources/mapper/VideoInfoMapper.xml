@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.VideoInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.VideoInfo">
+            <id property="videoId" column="videoId" jdbcType="VARCHAR"/>
+            <result property="videoCover" column="videoCover" jdbcType="VARCHAR"/>
+            <result property="videoName" column="videoName" jdbcType="VARCHAR"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="lastUpdateTime" column="lastUpdateTime" jdbcType="TIMESTAMP"/>
+            <result property="pCategoryId" column="pCategoryId" jdbcType="INTEGER"/>
+            <result property="categoryId" column="categoryId" jdbcType="INTEGER"/>
+            <result property="postType" column="postType" jdbcType="TINYINT"/>
+            <result property="originInfo" column="originInfo" jdbcType="VARCHAR"/>
+            <result property="tags" column="tags" jdbcType="VARCHAR"/>
+            <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+            <result property="interaction" column="interaction" jdbcType="VARCHAR"/>
+            <result property="duration" column="duration" jdbcType="INTEGER"/>
+            <result property="playCount" column="playCount" jdbcType="INTEGER"/>
+            <result property="likeCount" column="likeCount" jdbcType="INTEGER"/>
+            <result property="danMuCount" column="danMuCount" jdbcType="INTEGER"/>
+            <result property="commentCount" column="commentCount" jdbcType="INTEGER"/>
+            <result property="coinCount" column="coinCount" jdbcType="INTEGER"/>
+            <result property="collectCount" column="collectCount" jdbcType="INTEGER"/>
+            <result property="recommendType" column="recommendType" jdbcType="TINYINT"/>
+            <result property="lastPlayTime" column="lastPlayTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        videoId,videoCover,videoName,
+        userId,createTime,lastUpdateTime,
+        pCategoryId,categoryId,postType,
+        originInfo,tags,introduction,
+        interaction,duration,playCount,
+        likeCount,danMuCount,commentCount,
+        coinCount,collectCount,recommendType,
+        lastPlayTime
+    </sql>
+</mapper>

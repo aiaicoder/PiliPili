@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.UserInfoMapper">
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.UserInfo">
+            <id property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="nickName" column="NickName" jdbcType="VARCHAR"/>
+            <result property="sex" column="Sex" jdbcType="TINYINT"/>
+            <result property="birthday" column="Birthday" jdbcType="VARCHAR"/>
+            <result property="school" column="School" jdbcType="VARCHAR"/>
+            <result property="userProfile" column="userProfile" jdbcType="VARCHAR"/>
+            <result property="userAvatar" column="userAvatar" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="joinTime" column="JoinTime" jdbcType="TIMESTAMP"/>
+            <result property="lastLoginTime" column="lastLoginTime" jdbcType="TIMESTAMP"/>
+            <result property="lastLoginIp" column="lastLoginIp" jdbcType="VARCHAR"/>
+            <result property="noticeInfo" column="noticeInfo" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="totalCoinCount" column="totalCoinCount" jdbcType="INTEGER"/>
+            <result property="currentCoinCount" column="currentCoinCount" jdbcType="INTEGER"/>
+            <result property="theme" column="theme" jdbcType="TINYINT"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        userId,email,password,
+        NickName,Sex,Birthday,
+        School,userProfile,userAvatar,
+        userRole,JoinTime,lastLoginTime,
+        lastLoginIp,noticeInfo,status,
+        totalCoinCount,currentCoinCount,theme,
+        updateTime
+    </sql>
+</mapper>

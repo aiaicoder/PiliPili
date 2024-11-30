@@ -1,0 +1,8 @@
+logs
+webserver
+.idea
+.vscode
+pilipili-admin/target
+pilipili-web/target
+pilipili-common/target
+
