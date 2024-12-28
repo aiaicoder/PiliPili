@@ -1,7 +1,10 @@
 package com.pilipili.service;
 
+import com.pilipili.Model.entity.VideoInfoFilePost;
 import com.pilipili.Model.entity.VideoInfoPost;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author 15712
@@ -10,4 +13,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface VideoInfoPostService extends IService<VideoInfoPost> {
 
+    void saveVideoInfoPost(VideoInfoPost videoInfoPost, List<VideoInfoFilePost> videoInfoFilePosts);
+    void transferVideoFile(VideoInfoFilePost videoInfoFilePost);
+
+    void auditVideo(String videoId, Integer status, String reason);
 }

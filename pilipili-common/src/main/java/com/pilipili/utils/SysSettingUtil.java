@@ -16,6 +16,8 @@ import javax.annotation.Resource;
  */
 @Component
 public class SysSettingUtil {
+
+
     @Resource
     private RedisUtils redisUtils;
 

@@ -39,4 +39,73 @@
         coinCount,collectCount,recommendType,
         lastPlayTime
     </sql>
+    <update id="updateCountInfo">
+        update VideoInfo set ${field} = ${field} + #{changeCount}
+        <if test="field == playCount">
+              ,lastplayTime = now()
+        </if>
+        where videoId = #{videoId}
+    </update>
+
+    <select id="getRecommendVideoList" resultType="com.pilipili.Model.Vo.VideoInfoVo">
+        SELECT <include refid="Base_Column_List"/> ,
+            u.userAvatar,
+            u.nickName
+        FROM VideoInfo v
+                 LEFT JOIN userInfo u ON v.userId = u.userId
+        WHERE v.recommendType = #{recommendType}
+        order by v.createTime DESC
+    </select>
+
+    <select id="loadVideo" resultType="com.pilipili.Model.Vo.VideoInfoVo">
+        SELECT <include refid="Base_Column_List"/>
+        u.userAvatar,
+        u.nickName
+        FROM VideoInfo v
+        LEFT JOIN userInfo u ON v.userId = u.userId
+        WHERE v.pCategoryId= #{videoInfoQueryRequest.pCategoryId}
+          and v.categoryId= #{videoInfoQueryRequest.categoryId}
+        and v.recommendType = #{recommendType}
+        order by v.createTime DESC
+    </select>
+
+
+    <insert id="insertOrUpdate" parameterType="com.pilipili.Model.entity.VideoInfo">
+        INSERT INTO VideoInfo (
+            videoId, videoCover, videoName, userId, createTime, lastUpdateTime,
+            pCategoryId, categoryId, postType, originInfo, tags, introduction,
+            interaction, duration, playCount, likeCount, danMuCount, commentCount,
+            coinCount, collectCount, recommendType, lastPlayTime
+        )
+        VALUES (
+            #{record.videoId}, #{record.videoCover}, #{record.videoName}, 
+            #{record.userId}, #{record.createTime}, #{record.lastUpdateTime},
+            #{record.pCategoryId}, #{record.categoryId}, #{record.postType}, 
+            #{record.originInfo}, #{record.tags}, #{record.introduction},
+            #{record.interaction}, #{record.duration}, #{record.playCount}, 
+            #{record.likeCount}, #{record.danMuCount}, #{record.commentCount},
+            #{record.coinCount}, #{record.collectCount}, #{record.recommendType}, 
+            #{record.lastPlayTime}
+        )
+        ON DUPLICATE KEY UPDATE
+            videoCover = VALUES(videoCover),
+            videoName = VALUES(videoName),
+            lastUpdateTime = VALUES(lastUpdateTime),
+            pCategoryId = VALUES(pCategoryId),
+            categoryId = VALUES(categoryId),
+            postType = VALUES(postType),
+            originInfo = VALUES(originInfo),
+            tags = VALUES(tags),
+            introduction = VALUES(introduction),
+            interaction = VALUES(interaction),
+            duration = VALUES(duration),
+            playCount = VALUES(playCount),
+            likeCount = VALUES(likeCount),
+            danMuCount = VALUES(danMuCount),
+            commentCount = VALUES(commentCount),
+            coinCount = VALUES(coinCount),
+            collectCount = VALUES(collectCount),
+            recommendType = VALUES(recommendType),
+            lastPlayTime = VALUES(lastPlayTime)
+    </insert>
 </mapper>

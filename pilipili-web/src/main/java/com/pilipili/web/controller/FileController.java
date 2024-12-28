@@ -2,21 +2,22 @@ package com.pilipili.web.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Model.dto.File.PreUploadFileRequest;
 import com.pilipili.Model.dto.File.UploadFileDto;
 import com.pilipili.Model.entity.UserInfo;
+import com.pilipili.Model.entity.VideoInfoFile;
+import com.pilipili.Model.enums.DateTimePatternEnum;
 import com.pilipili.common.BaseResponse;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.common.ResultUtils;
 import com.pilipili.config.AppConfig;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.service.UserInfoService;
+import com.pilipili.service.VideoInfoFileService;
 import com.pilipili.system.SysSettingDTO;
-import com.pilipili.utils.FFmpegUtils;
-import com.pilipili.utils.RedisUtils;
-import com.pilipili.utils.StringUtil;
-import com.pilipili.utils.SysSettingUtil;
+import com.pilipili.utils.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,7 @@ import javax.validation.constraints.NotEmpty;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 /**
  * @author <a href="https://github.com/aiaicoder">  小新
@@ -58,6 +60,9 @@ public class FileController {
 
     @Resource
     private RedisUtils redisUtils;
+
+    @Resource
+    private VideoInfoFileService videoInfoFileService;
 
     @GetMapping("/getResource")
     @ApiOperation("获取资源")
@@ -132,8 +137,77 @@ public class FileController {
         preUploadVideoFile.setFileSize(preUploadVideoFile.getFileSize() + chunkFile.getSize());
         //更新一下文件上传信息
         redisUtils.updatePreUploadVideoFile(userId, preUploadVideoFile);
-        return ResultUtils.success("上传成功");
+        return ResultUtils.success(null);
     }
 
 
+    @PostMapping("/deleteUploadVideo")
+    @ApiOperation("删除临时上传的视频")
+    @SaCheckLogin
+    public BaseResponse<String> deleteUploadVideo(@NotEmpty String uploadId) throws Exception {
+        UserInfo loginUser = userInfoService.getLoginUser();
+        String userId = loginUser.getUserId();
+        UploadFileDto preUploadVideoFile = redisUtils.getPreUploadVideoFile(userId, uploadId);
+        if (preUploadVideoFile == null) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "文件不存在请重新上传");
+        }
+        redisUtils.delPreUploadVideoFile(userId, uploadId);
+        File file = new File(appConfig.folder + CommonConstant.FILE_FOLDER + CommonConstant.FILE_FOLDER_TEMP + preUploadVideoFile.getFilePath());
+        if (file.exists()) {
+            FileUtil.del(file);
+        }
+        return ResultUtils.success(uploadId);
+    }
+
+
+    @PostMapping("/uploadImage")
+    @ApiOperation("上传视频封面")
+    public BaseResponse<String> uploadImage(@NotNull MultipartFile file, @NotNull Boolean createThumbnail) {
+        String day = DateUtils.format(new Date(), DateTimePatternEnum.YYYYMMDD.getPattern());
+        String folder = appConfig.getFolder() + CommonConstant.FILE_FOLDER + CommonConstant.FILE_COVER + day;
+        File folderFile = new File(folder);
+        if (!folderFile.exists()) {
+            folderFile.mkdirs();
+        }
+        String fileName = file.getOriginalFilename();
+        String suffix = FileUtil.extName(fileName);
+        String newFileName = RandomUtil.randomString(CommonConstant.RANDOM_STRING_LENGTH30) + "." + suffix;
+        String filePath = folder + File.separator + newFileName;
+        try {
+            file.transferTo(new File(filePath));
+        } catch (Exception e) {
+            log.error("文件上传失败", e);
+            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+        }
+        if (createThumbnail) {
+            //生成缩略图
+            fFmpegUtils.createImageThumbnail(filePath);
+        }
+        return ResultUtils.success(CommonConstant.FILE_COVER + day + "/" + newFileName);
+    }
+
+
+    @GetMapping("/videoResource/{fileId}")
+    @ApiOperation("获取视频资源")
+    public void videoResource(HttpServletResponse response, @PathVariable @NotEmpty String fileId) {
+        VideoInfoFile videoInfoFile = videoInfoFileService.getById(fileId);
+        if (videoInfoFile == null) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "文件不存在");
+        }
+        String filePath = videoInfoFile.getFilePath();
+        readFile(response, filePath + "/" + CommonConstant.M3U8_NAME);
+        //TODO 更新视频的阅读信息
+    }
+
+
+    @GetMapping("/videoResource/{fileId}/{ts}")
+    @ApiOperation("获取视频资源")
+    public void videoResource(HttpServletResponse response, @PathVariable @NotEmpty String fileId,@PathVariable @NotEmpty String ts) {
+        VideoInfoFile videoInfoFile = videoInfoFileService.getById(fileId);
+        if (videoInfoFile == null) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "文件不存在");
+        }
+        String filePath = videoInfoFile.getFilePath();
+        readFile(response, filePath + "/" + ts);
+    }
 }

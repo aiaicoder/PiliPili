@@ -7,6 +7,7 @@ import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Constant.RedisKeyConstant;
 import com.pilipili.Model.dto.File.UploadFileDto;
 import com.pilipili.Model.entity.CategoryInfo;
+import com.pilipili.Model.entity.VideoInfoFilePost;
 import com.pilipili.Model.enums.DateTimePatternEnum;
 import com.pilipili.config.AppConfig;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -209,4 +210,60 @@ public class RedisUtils {
     public void updatePreUploadVideoFile(String userId, UploadFileDto uploadFileDto) {
         stringRedisTemplate.opsForValue().set(REDIS_KEY_UPLOAD_FILE + userId + uploadFileDto.getUploadId(), JSONUtil.toJsonStr(uploadFileDto), RedisKeyConstant.REDIS_FILE_EXPIRE_ONE_DAY, TimeUnit.SECONDS);
     }
+
+    public void delPreUploadVideoFile(String userId, String uploadId) {
+        stringRedisTemplate.delete(REDIS_KEY_UPLOAD_FILE + userId + uploadId);
+    }
+
+    /**
+     * 视频文件删除的消息队列
+     * @param videoId
+     * @param filePath
+     */
+    public void addFileToDeleteQueue(String videoId, List<String> filePath) {
+        stringRedisTemplate.opsForList().leftPushAll(REDIS_KEY_DELETE_FILE + videoId,filePath);
+        //设置过期时间
+        stringRedisTemplate.expire(REDIS_KEY_DELETE_FILE + videoId,RedisKeyConstant.REDIS_FILE_EXPIRE_ONE_DAY * 7,TimeUnit.SECONDS);
+    }
+
+
+    /**
+     * 获取视频文件删除列表
+     * @param videoId
+     * @return
+     */
+    public List<String> getDelFileList(String videoId) {
+        String key = REDIS_KEY_DELETE_FILE + videoId;
+        return stringRedisTemplate.opsForList().range(key, 0, -1);
+    }
+
+    /**
+     * 清除视频文件删除列表的缓存
+     * @param videoId
+     */
+    public void clearDelFileList(String videoId) {
+        String key = REDIS_KEY_DELETE_FILE + videoId;
+        stringRedisTemplate.delete(key);
+    }
+
+    /**
+     * 添加文件转码任务
+     * @param addFileList
+     */
+    public void addFileToTransferQueue(List<VideoInfoFilePost> addFileList) {
+        stringRedisTemplate.opsForList().leftPushAll(REDIS_KEY_TRANSFER_FILE ,JSONUtil.toJsonStr(addFileList));
+    }
+
+    /**
+     * 获取转码任务
+     * @return
+     */
+    public VideoInfoFilePost getFileFromTransferQueue() {
+        String s = stringRedisTemplate.opsForList().rightPop(REDIS_KEY_TRANSFER_FILE);
+        return JSONUtil.toBean(s, VideoInfoFilePost.class);
+    }
+
+
+
+    
 }

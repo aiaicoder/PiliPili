@@ -1,7 +1,8 @@
 package com.pilipili.service;
 
-import com.pilipili.Model.entity.VideoInfoFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pilipili.Model.entity.VideoInfoFile;
+import com.pilipili.Model.entity.VideoInfoFilePost;
 
 /**
 * @author 15712
@@ -9,5 +10,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-11-30 20:54:43
 */
 public interface VideoInfoFileService extends IService<VideoInfoFile> {
+
 
 }

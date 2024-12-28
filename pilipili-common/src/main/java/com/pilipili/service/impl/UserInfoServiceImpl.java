@@ -46,7 +46,7 @@ import static com.pilipili.Constant.UserConstant.*;
  * 用户服务实现
  *
  * @author <a href="https://github.com/liyupi">小新</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
+ * 
  */
 @Service
 @Slf4j
@@ -197,13 +197,19 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public UserInfo getLoginUser() {
         // 先判断是否已登录
-        // 先判断是否已登录
         Object userObj = StpUtil.getSession().get(USER_LOGIN_STATE);
         UserInfo currentUser = (UserInfo) userObj;
         if (currentUser == null || currentUser.getUserId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         return currentUser;
+    }
+
+    @Override
+    public UserInfo getLoginUserNoEx() {
+        // 先判断是否已登录
+        Object userObj = StpUtil.getSession().get(USER_LOGIN_STATE);
+        return (UserInfo) userObj;
     }
 
 

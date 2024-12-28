@@ -2,6 +2,7 @@ package com.pilipili.system;
 
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 

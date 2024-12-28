@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.VideoDanMuMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.VideoDanMu">
+            <id property="danMuId" column="DanMuId" jdbcType="INTEGER"/>
+            <result property="videoId" column="videoId" jdbcType="VARCHAR"/>
+            <result property="fileId" column="fileId" jdbcType="VARCHAR"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="postTime" column="postTime" jdbcType="TIMESTAMP"/>
+            <result property="text" column="text" jdbcType="VARCHAR"/>
+            <result property="mode" column="mode" jdbcType="TINYINT"/>
+            <result property="color" column="color" jdbcType="VARCHAR"/>
+            <result property="time" column="time" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        DanMuId,videoId,fileId,
+        userId,postTime,text,
+        mode,color,time
+    </sql>
+</mapper>

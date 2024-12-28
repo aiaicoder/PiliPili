@@ -1,10 +1,14 @@
 package com.pilipili.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pilipili.Model.entity.VideoInfoFilePost;
+import com.pilipili.Model.entity.VideoInfoPost;
 import com.pilipili.service.VideoInfoFileService;
 import com.pilipili.Model.entity.VideoInfoFile;
 import com.pilipili.mapper.VideoInfoFileMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
 * @author 15712
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VideoInfoFileServiceImpl extends ServiceImpl<VideoInfoFileMapper, VideoInfoFile>
     implements VideoInfoFileService {
+
 
 }
 

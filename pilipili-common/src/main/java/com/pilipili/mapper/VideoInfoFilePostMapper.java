@@ -2,6 +2,9 @@ package com.pilipili.mapper;
 
 import com.pilipili.Model.entity.VideoInfoFilePost;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author 15712
@@ -10,6 +13,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.pilipili.Model.entity.VideoInfoFilePost
 */
 public interface VideoInfoFilePostMapper extends BaseMapper<VideoInfoFilePost> {
+
+    void deleteBathByFileId(@Param("fileIds") List<String> fileIds,@Param("userId") String userId);
+
+    void insertOrUpdateBatch(@Param("fileInfoList") List<VideoInfoFilePost> fileInfoList);
+
+    Integer getDuration(@Param("videoId") String videoId);
 
 }
 

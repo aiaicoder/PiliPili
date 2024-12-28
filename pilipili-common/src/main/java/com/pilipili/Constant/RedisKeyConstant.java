@@ -64,5 +64,10 @@ public interface RedisKeyConstant {
 
     String REDIS_KEY_UPLOAD_FILE = REDIS_KEY_PREFIX + "uploading:";
 
+    String REDIS_KEY_DELETE_FILE = REDIS_KEY_PREFIX + "del:video_file:";
+
+
+    String REDIS_KEY_TRANSFER_FILE = REDIS_KEY_PREFIX + "trans:queue:";
+
 
 }

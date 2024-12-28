@@ -29,4 +29,32 @@
         postType,originInfo,tags,
         introduction,interaction,duration
     </sql>
+
+<!-- todo 可能逻辑有问题   -->
+    <select id="getVideoInfoPostVoList" resultType="com.pilipili.Model.Vo.VideoInfoPostVo">
+        select
+        <include refid="Base_Column_List"/>
+        <if test="videoInfoPostListRequest.countInfo">
+            ,c.playCount,c.likeCount,c.collectCount,c.commentCount,c.danMuCount,c.coinCount,c.recommendType
+        </if>
+        <if test="videoInfoPostListRequest.userInfo">
+            ,u.userAvatar,u.NickName
+        </if>
+        from VideoInfoPost v
+        <if test="videoInfoPostListRequest.countInfo">
+            left join VideoInfo c on v.videoId = c.videoId
+        </if>
+        <if test="videoInfoPostListRequest.userInfo">
+            left join userInfo u on v.userId = u.userId
+        </if>
+        where
+        v.userId = #{userId} and v.status = #{videoInfoPostListRequest.status}
+        <if test="videoInfoPostListRequest.videoNameFuzzy != null and videoInfoPostListRequest.videoNameFuzzy != ''">
+            and v.videoName like concat('%',#{videoInfoPostListRequest.videoNameFuzzy},'%')
+        </if>
+        <if test="excludeStatus != NULL">
+            and v.status not in(<foreach collection="excludeStatus" item="item" separator=",">#{item}</foreach>)
+        </if>
+        order by v.#{videoInfoPostListRequest.sortField} #{videoInfoPostListRequest.sortOrder}
+    </select>
 </mapper>

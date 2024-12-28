@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.UserActionMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.UserAction">
+            <id property="actionId" column="actionId" jdbcType="INTEGER"/>
+            <result property="videoId" column="videoId" jdbcType="VARCHAR"/>
+            <result property="videoUserId" column="videoUserId" jdbcType="VARCHAR"/>
+            <result property="commentId" column="commentId" jdbcType="INTEGER"/>
+            <result property="actionType" column="actionType" jdbcType="TINYINT"/>
+            <result property="actionCount" column="actionCount" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="actionTime" column="actionTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        actionId,videoId,videoUserId,
+        commentId,actionType,actionCount,
+        userId,actionTime
+    </sql>
+</mapper>

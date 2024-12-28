@@ -24,4 +24,29 @@
         fileSize,filePath,updateType,
         transferResult,duration
     </sql>
+    <delete id="deleteBathByFileId">
+        delete from VideoInfoFilePost where fileId in
+        <foreach collection="fileIds" item="fileId" separator="," open="(" close=")">
+            #{fileId}
+        </foreach>
+        and userId = #{userId}
+    </delete>
+    <select id="getDuration" resultType="java.lang.Integer">
+        select ifnull(sum(duration), 0)
+        from VideoInfo
+        where videoId = #{videoId}
+    </select>
+
+  <!-- todo 可能会有问题   -->
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO VideoInfoFilePost (fileId,userId,uploadId,videoId,fileIndex,updateType,transferResult)
+        VALUES
+        <foreach collection="fileInfoList" item="item" index="index" separator=",">
+            (#{item.fileId},#{item.userId}, #{item.uploadId},#{item.videoId},#{item.fileIndex},#{item.updateType},#{item.transferResult})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        fileIndex = VALUES(fileIndex),
+        updateType = VALUES(updateType),
+        transferResult = VALUES(transferResult),
+    </insert>
 </mapper>

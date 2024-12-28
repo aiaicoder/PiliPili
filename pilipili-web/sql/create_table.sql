@@ -125,8 +125,57 @@ CREATE TABLE `VideoInfoFile` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='视频文件信息';
 
 
+CREATE TABLE `UserAction` (
+                               `actionId` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                               `videoId` varchar(10) NOT NULL COMMENT '视频ID',
+                               `videoUserId` varchar(10) NOT NULL COMMENT '视频用户ID',
+                               `commentId` int(11) NOT NULL DEFAULT '0' COMMENT '评论ID',
+                               `actionType` tinyint(1) NOT NULL COMMENT '0:评论喜欢点赞 1:讨厌评论 2:视频点赞 3:视频收藏 4:视频投币',
+                               `actionCount` int(11) NOT NULL COMMENT '数量',
+                               `userId` varchar(10) NOT NULL COMMENT '用户ID',
+                               `actionTime` datetime NOT NULL COMMENT '操作时间',
+                               PRIMARY KEY (`actionId`) USING BTREE,
+                               UNIQUE KEY `idxKeyVideoCommentTypeUser` (`videoId`,`commentId`,`actionType`,`userId`) USING BTREE,
+                               KEY `idxVideoId` (`videoId`) USING BTREE,
+                               KEY `idxUserId` (`userId`) USING BTREE,
+                               KEY `idxType` (`actionType`) USING BTREE,
+                               KEY `idxActionTime` (`actionTime`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='用户行为 点赞、评论';
 
 
+CREATE TABLE `VideoDanMu` (
+                               `DanMuId` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                               `videoId` varchar(10) NOT NULL COMMENT '视频ID',
+                               `fileId` varchar(20) NOT NULL COMMENT '唯一ID',
+                               `userId` varchar(15) NOT NULL COMMENT '用户ID',
+                               `postTime` datetime DEFAULT NULL COMMENT '发布时间',
+                               `text` varchar(300) DEFAULT NULL COMMENT '内容',
+                               `mode` tinyint(1) DEFAULT NULL COMMENT '展示位置',
+                               `color` varchar(10) DEFAULT NULL COMMENT '颜色',
+                               `time` int(11) DEFAULT NULL COMMENT '展示时间',
+                               PRIMARY KEY (`DanMuId`) USING BTREE,
+                               KEY `idxFileId` (`fileId`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='视频弹幕';
 
 
+CREATE TABLE `VideoComment` (
+                                 `commentId` int(11) NOT NULL AUTO_INCREMENT COMMENT '评论ID',
+                                 `pCommentId` int(11) NOT NULL COMMENT '父级评论ID',
+                                 `videoId` varchar(10) NOT NULL COMMENT '视频ID',
+                                 `videoUserId` varchar(10) NOT NULL COMMENT '视频用户ID',
+                                 `content` varchar(500) DEFAULT NULL COMMENT '回复内容',
+                                 `imgPath` varchar(150) DEFAULT NULL COMMENT '图片',
+                                 `userId` varchar(15) NOT NULL COMMENT '用户ID',
+                                 `replyUserId` varchar(15) DEFAULT NULL COMMENT '回复人ID',
+                                 `topType` tinyint(4) DEFAULT '0' COMMENT '0:不置顶 1:置顶',
+                                 `postTime` datetime NOT NULL COMMENT '发布时间',
+                                 `likeCount` int(11) DEFAULT '0' COMMENT '喜欢数量',
+                                 `hateCount` int(11) DEFAULT '0' COMMENT '讨厌数量',
+                                 PRIMARY KEY (`commentId`) USING BTREE,
+                                 KEY `idxPostTime` (`postTime`) USING BTREE,
+                                 KEY `idxTop` (`topType`) USING BTREE,
+                                 KEY `idxPId` (`pCommentId`) USING BTREE,
+                                 KEY `idxUserId` (`userId`) USING BTREE,
+                                 KEY `idxVideoId` (`videoId`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='评论';
 

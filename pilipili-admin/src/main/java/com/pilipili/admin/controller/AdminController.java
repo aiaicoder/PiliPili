@@ -39,7 +39,7 @@ import static com.pilipili.Constant.RedisKeyConstant.LIMIT_KEY_PREFIX;
  * 用户接口
  *
  * @author <a href="https://github.com/liyupi">小新</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
+ * 
  */
 @RestController
 @RequestMapping("/account")

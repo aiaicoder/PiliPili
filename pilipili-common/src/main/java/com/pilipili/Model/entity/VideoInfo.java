@@ -16,6 +16,7 @@ import java.util.Date;
 @TableName(value ="VideoInfo")
 @Data
 public class VideoInfo implements Serializable {
+
     /**
      * 视频ID
      */

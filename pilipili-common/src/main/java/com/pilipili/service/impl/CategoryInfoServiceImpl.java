@@ -120,7 +120,7 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
     }
 
     /**
-     * 递归转换
+     * 递归转换，变成树形
      *
      * @param categoryList
      * @param pCategoryId

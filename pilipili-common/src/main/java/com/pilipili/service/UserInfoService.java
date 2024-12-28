@@ -6,7 +6,6 @@ import com.pilipili.Model.Vo.UserInfoVo;
 import com.pilipili.Model.dto.user.UserQueryRequest;
 import com.pilipili.Model.entity.UserInfo;
 
-
 import java.util.List;
 
 
@@ -52,7 +51,6 @@ public interface UserInfoService extends IService<UserInfo> {
     public boolean updateUserInfo(UserInfo loginUser);
 
 
-
     /**
      * 获取当前登录用户
      *
@@ -60,9 +58,16 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     UserInfo getLoginUser();
 
+    /**
+     * 获取用户信息不报异常
+     * @return
+     */
+    UserInfo getLoginUserNoEx();
+
 
     /**
      * 用户登录
+     *
      * @return
      */
     boolean userLogout();

@@ -15,6 +15,7 @@ import lombok.Data;
 @TableName(value ="VideoInfoFilePost")
 @Data
 public class VideoInfoFilePost implements Serializable {
+
     /**
      * 唯一ID
      */

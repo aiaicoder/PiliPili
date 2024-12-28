@@ -68,8 +68,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="VideoInfoPost" />
-                  <option name="tableName" value="VideoInfoPost" />
+                  <option name="className" value="UserAction" />
+                  <option name="tableName" value="UserAction" />
                 </TableUIInfo>
               </list>
             </option>
