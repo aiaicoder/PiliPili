@@ -25,4 +25,43 @@
         userId,replyUserId,topType,
         postTime,likeCount,hateCount
     </sql>
+
+
+    <update id="updateCountInfo">
+        update VideoComment set ${field} = ${field} + ${changeCount}
+        <if test="oppositeField != null">
+            ,${oppositeField} = ${oppositeField} + ${opChangeCount}
+        </if>
+        where commentId = #{commentId}
+    </update>
+
+    <resultMap id="base_result_map_children" type="com.pilipili.Model.entity.VideoComment" extends="BaseResultMap">
+        <collection property="videoCommentChildren" column="commentId" select="com.pilipili.mapper.VideoCommentMapper.selectChildrenComment"/>
+    </resultMap>
+
+    <select id="selectChildrenComment" resultMap="BaseResultMap">
+        select v.*,u.nickName, u.userAvatar,u2.nickName as replyNikeName,u2.userAvatar from VideoComment v
+        inner join userInfo u on v.userId = u.userId
+        left join userInfo u2 on v.replyUserId = u2.userId
+        where v.pCommentId = #{commentId} order by v.commentId asc
+    </select>
+
+    <select id="findListByPageWithChildren" resultMap="base_result_map_children">
+        select <include refid="Base_Column_List"/>,u.nikeName,u.userAvatar
+        from VideoComment v left join userInfo u on v.userId = u.userId
+        where VideoComment.videoId = #{videoId}
+        <if test="commentQuery.topType != null">
+            and VideoComment.topType = #{commentQuery.topType}
+        </if>
+        <if test="commentQuery.orderBy != null">
+            order by #{commentQuery.orderBy}
+        </if>
+    </select>
+
+    <select id="findListByPage" resultType="com.pilipili.Model.entity.VideoComment">
+        select <include refid="Base_Column_List"/>
+        from VideoComment
+        where VideoComment.videoId = #{videoId}
+        order by #{commentQuery.orderBy}
+    </select>
 </mapper>

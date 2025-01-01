@@ -2,6 +2,7 @@ package com.pilipili.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pilipili.Model.entity.UserInfo;
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -12,6 +13,7 @@ import com.pilipili.Model.entity.UserInfo;
 */
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
+    Integer updateCountInfo(@Param("userId") String userId, @Param("changeCount")Integer changeCount);
 }
 
 

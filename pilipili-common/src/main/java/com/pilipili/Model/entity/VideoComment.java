@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
+import java.util.List;
 
 /**
  * 评论
@@ -75,6 +77,22 @@ public class VideoComment implements Serializable {
      * 讨厌数量
      */
     private Integer hateCount;
+
+    @TableField(exist = false)
+    private String nikeName;
+
+    @TableField(exist = false)
+    private String userAvatar;
+
+    @TableField(exist = false)
+    private String replyNikeName;
+
+    @TableField(exist = false)
+    private String replyUserAvatar;
+
+    @TableField(exist = false)
+    private List<VideoComment> videoCommentChildren;
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

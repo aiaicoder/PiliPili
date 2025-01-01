@@ -21,6 +21,7 @@ import com.pilipili.service.UserActionService;
 import com.pilipili.service.UserInfoService;
 import com.pilipili.service.VideoInfoFileService;
 import com.pilipili.service.VideoInfoService;
+import com.pilipili.utils.RedisUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +54,10 @@ public class VideoInfoController {
 
     @Resource
     private UserInfoService userInfoService;
+
+    @Resource
+    private RedisUtils redisUtils;
+
 
 
     @GetMapping("/loadRecommendVideo")
@@ -113,7 +118,7 @@ public class VideoInfoController {
 
     @GetMapping("/reportVideoPlayOnline")
     @ApiOperation("上报视频播放在线人数")
-    public BaseResponse<Boolean> reportVideoPlayOnline(@NotEmpty String fileId, @NotEmpty String deviceId) {
-        return ResultUtils.success(null);
+    public BaseResponse<Integer> reportVideoPlayOnline(@NotEmpty String fileId, @NotEmpty String deviceId) {
+        return ResultUtils.success(redisUtils.reportVideoPlayOnline(fileId, deviceId));
     }
 }

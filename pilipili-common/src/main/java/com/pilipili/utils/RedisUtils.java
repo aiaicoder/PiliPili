@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.pilipili.Constant.RedisKeyConstant.*;
@@ -256,6 +257,7 @@ public class RedisUtils {
 
     /**
      * 获取转码任务
+     *
      * @return
      */
     public VideoInfoFilePost getFileFromTransferQueue() {
@@ -263,7 +265,26 @@ public class RedisUtils {
         return JSONUtil.toBean(s, VideoInfoFilePost.class);
     }
 
+    public Integer reportVideoPlayOnline(String fileId, String deviceId) {
+        String userPlayOnlineKey = String.format(REDIS_KEY_VIDEO_PLAY_COUNT_USER, fileId, deviceId);
+        String playOnlineKey = String.format(REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE, fileId);
+        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(userPlayOnlineKey))) {
+            stringRedisTemplate.opsForValue().setIfAbsent(userPlayOnlineKey, fileId, REDIS_FILE_EXPIRE_ONE_SECOND * 8, TimeUnit.SECONDS);
+            Long newCount = stringRedisTemplate.opsForValue().increment(playOnlineKey);
+            // 设置过期时间
+            stringRedisTemplate.expire(playOnlineKey, REDIS_FILE_EXPIRE_ONE_SECOND * 10, TimeUnit.SECONDS);
+            return Objects.requireNonNull(newCount).intValue();
+        }
+        //有就续期
+        stringRedisTemplate.expire(userPlayOnlineKey, REDIS_FILE_EXPIRE_ONE_SECOND * 8, TimeUnit.SECONDS);
+        stringRedisTemplate.expire(playOnlineKey, REDIS_FILE_EXPIRE_ONE_SECOND * 10, TimeUnit.SECONDS);
+        return Integer.valueOf(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(playOnlineKey)));
+
+    }
 
 
-    
+    public void decrement(String key) {
+
+        stringRedisTemplate.opsForValue().decrement(key);
+    }
 }

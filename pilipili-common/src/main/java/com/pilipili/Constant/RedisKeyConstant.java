@@ -46,6 +46,9 @@ public interface RedisKeyConstant {
     Long REDIS_FILE_EXPIRE_ONE_DAY = 60 * 60L * 24;
 
 
+    Long REDIS_FILE_EXPIRE_ONE_SECOND = 1L;
+
+
     String LIMIT_KEY_PREFIX = REDIS_KEY_PREFIX + "checkCode:limit:";
 
 
@@ -68,6 +71,15 @@ public interface RedisKeyConstant {
 
 
     String REDIS_KEY_TRANSFER_FILE = REDIS_KEY_PREFIX + "trans:queue:";
+
+    //视频在线
+    String REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE_PREFIX = REDIS_KEY_PREFIX + "video:play:online:";
+
+    String REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE = REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE_PREFIX + "count:%s";
+
+    String REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX = "user:";
+
+    String REDIS_KEY_VIDEO_PLAY_COUNT_USER = REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX + REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX + "%s:%s";
 
 
 }

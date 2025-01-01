@@ -34,4 +34,14 @@
         totalCoinCount,currentCoinCount,theme,
         updateTime
     </sql>
+    <update id="updateCountInfo">
+        update userInfo
+        <set>
+            currentCoinCount = currentCoinCount + #{changeCount}
+            <if test="changeCount > 0">
+                ,totalCoinCount = totalCoinCount + #{changeCount}
+            </if>
+        </set>
+        where userId = #{userId} and currentCoinCount + #{changeCount} >= 0;
+    </update>
 </mapper>
