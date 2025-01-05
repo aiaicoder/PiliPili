@@ -4,11 +4,14 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pilipili.Constant.CommonConstant;
+import com.pilipili.Model.Vo.VideoInfoPostDetailVo;
 import com.pilipili.Model.Vo.VideoInfoPostVo;
 import com.pilipili.Model.Vo.VideoStatusCountInfoVO;
 import com.pilipili.Model.dto.video.VideoInfoPostListRequest;
+import com.pilipili.Model.dto.video.VideoInteractionRequest;
 import com.pilipili.Model.dto.video.VideoPostRequest;
 import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoInfoFilePost;
@@ -20,13 +23,18 @@ import com.pilipili.common.ResultUtils;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.mapper.VideoInfoPostMapper;
 import com.pilipili.service.UserInfoService;
+import com.pilipili.service.VideoInfoFilePostService;
 import com.pilipili.service.VideoInfoPostService;
 import com.pilipili.service.VideoInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.similarities.Lambda;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -36,6 +44,7 @@ import java.util.List;
  */
 @RequestMapping("/uCenter")
 @RestController
+@Validated
 public class UCenterVideoPostController {
 
     @Resource
@@ -46,6 +55,9 @@ public class UCenterVideoPostController {
 
     @Resource
     private UserInfoService userInfoService;
+
+    @Resource
+    private VideoInfoFilePostService videoInfoFilePostService;
 
 
     @Resource
@@ -138,6 +150,56 @@ public class UCenterVideoPostController {
         videoStatusCountInfoVO.setInProgress(inProgress);
         return ResultUtils.success(videoStatusCountInfoVO);
     }
+
+    @GetMapping("/getVideoByVideoId")
+    @ApiOperation("获取视频发布信息")
+    @SaCheckLogin
+    public BaseResponse<VideoInfoPostDetailVo> getVideoInfoPost(@RequestParam("videoId") @NotNull String videoId) {
+        VideoInfoPost videoInfoPost = videoInfoPostService.getById(videoId);
+        if (videoInfoPost == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        List<VideoInfoFilePost> filePosts = videoInfoFilePostService.list(Wrappers.lambdaQuery(VideoInfoFilePost.class).eq(VideoInfoFilePost::getVideoId, videoId).orderByAsc(VideoInfoFilePost::getFileIndex));
+        VideoInfoPostDetailVo videoInfoPostDetailVo = new VideoInfoPostDetailVo();
+        videoInfoPostDetailVo.setVideoInfoPost(videoInfoPost);
+        videoInfoPostDetailVo.setVideoInfoFilePosts(filePosts);
+        return ResultUtils.success(videoInfoPostDetailVo);
+    }
+
+
+    @PostMapping("/saveVideoInteraction")
+    @ApiOperation("保存视频互动信息")
+    @SaCheckLogin
+    public BaseResponse<Boolean> saveVideoInteraction(@RequestBody VideoInteractionRequest videoInteractionRequest) {
+        UserInfo loginUser = userInfoService.getLoginUser();
+        if (videoInteractionRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String videoId = videoInteractionRequest.getVideoId();
+        String interaction = videoInteractionRequest.getInteraction();
+        if (StringUtils.isBlank(videoId) || StringUtils.isBlank(interaction)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        VideoInfoPost videoInfoPost = new VideoInfoPost();
+        videoInfoPost.setInteraction(interaction);
+        videoInfoPost.setVideoId(videoId);
+        videoInfoPost.setUserId(loginUser.getUserId());
+        videoInfoPostService.saveVideoInteraction(videoInfoPost);
+        return ResultUtils.success(null);
+    }
+
+
+    @PostMapping("/deleteVideo")
+    @ApiOperation("保存视频互动信息")
+    @SaCheckLogin
+    public BaseResponse<Boolean> deleteVideo(@NotEmpty String videoId) {
+        UserInfo loginUser = userInfoService.getLoginUser();
+        videoInfoService.deleteVideo(loginUser, videoId);
+        return ResultUtils.success(null);
+    }
+
+
+
 
 
 }

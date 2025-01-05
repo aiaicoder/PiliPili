@@ -44,9 +44,6 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
     @Resource
     private VideoCommentMapper videoCommentMapper;
 
-    @Resource
-    private VideoCommentService videoCommentService;
-
 
     @Override
     public void postComment(VideoComment videoComment, Integer replayCommentId) {
@@ -93,11 +90,11 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void topComment(String userId, Integer commentId) {
-        videoCommentService.cancelTopComment(userId,commentId);
+        this.cancelTopComment(userId,commentId);
         VideoComment comment = new VideoComment();
         comment.setCommentId(commentId);
         comment.setTopType(CommentTopTypeEnum.TOP.getType());
-        videoCommentService.updateById(comment);
+        updateById(comment);
     }
 
     @Override
@@ -117,7 +114,7 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         updateWrapper.eq("videoId",comment.getVideoId())
                 .eq("topType",CommentTopTypeEnum.TOP.getType())
                 .set("topType",CommentTopTypeEnum.NO_TOP.getType());
-        videoCommentService.update(updateWrapper);
+        update(updateWrapper);
     }
 
     @Override
@@ -136,12 +133,19 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         if (comment.getPCommentId() != 0) {
             QueryWrapper<VideoComment> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("pCommentId",commentId);
-            long count = videoCommentService.count(queryWrapper);
-            videoCommentService.remove(queryWrapper);
+            long count = count(queryWrapper);
+            remove(queryWrapper);
             videoInfoMapper.updateCountInfo(comment.getVideoId(), UserActionTypeEnum.VIDEO_COMMENT.getField(), (int) -count);
         }
        
     }
+
+    @Override
+    public Page<VideoComment> getVideoCommentList(Page<VideoComment> commentPage, String videoId) {
+        return videoCommentMapper.getVideoCommentList(commentPage,videoId);
+    }
+
+
 
 
 }

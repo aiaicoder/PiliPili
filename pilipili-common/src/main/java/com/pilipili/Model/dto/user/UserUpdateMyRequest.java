@@ -16,7 +16,7 @@ public class UserUpdateMyRequest implements Serializable {
     /**
      * 用户昵称
      */
-    private String userName;
+    private String nickName;
 
     /**
      * 用户头像
@@ -34,19 +34,19 @@ public class UserUpdateMyRequest implements Serializable {
     private Integer sex;
 
     /**
-     * 用户地区编号
+     * 用户生日
      */
-    private String areaCode;
+    private String birthday;
 
     /**
-     * 用户地区
+     * 用户学校
      */
-    private String areaName;
+    private String school;
 
     /**
-     * 好友申请条件
+     * 用户通告
      */
-    private Integer joinType;
+    private String noticeInfo;
 
     private static final long serialVersionUID = 1L;
 }

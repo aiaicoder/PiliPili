@@ -7,10 +7,10 @@
             <id property="userId" column="userId" jdbcType="VARCHAR"/>
             <result property="email" column="email" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>
-            <result property="nickName" column="NickName" jdbcType="VARCHAR"/>
-            <result property="sex" column="Sex" jdbcType="TINYINT"/>
-            <result property="birthday" column="Birthday" jdbcType="VARCHAR"/>
-            <result property="school" column="School" jdbcType="VARCHAR"/>
+            <result property="nickName" column="nickName" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="TINYINT"/>
+            <result property="birthday" column="birthday" jdbcType="VARCHAR"/>
+            <result property="school" column="school" jdbcType="VARCHAR"/>
             <result property="userProfile" column="userProfile" jdbcType="VARCHAR"/>
             <result property="userAvatar" column="userAvatar" jdbcType="VARCHAR"/>
             <result property="userRole" column="userRole" jdbcType="VARCHAR"/>

@@ -21,4 +21,17 @@
         userId,postTime,text,
         mode,color,time
     </sql>
+    <select id="getDanMuList" resultType="com.pilipili.Model.entity.VideoDanMu">
+        select <include refid="Base_Column_List"/>,
+        u.nikeName,v.videoName,v.videoCover
+        from VideoDanMu d
+        left join UserInfo u on d.userId = u.userId
+        inner join VideoInfo v on d.videoId = v.videoId
+        where d.videoId = #{videoId}
+        <if test="userId != null or userId != ''">
+            and v.userId = #{userId}
+        </if>
+        order by v.DanMuId desc
+    </select>
+
 </mapper>

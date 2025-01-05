@@ -12,18 +12,18 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * 视频弹幕
+ * 
  * @author 15712
- * @TableName VideoDanMu
+ * @TableName UserVideoSeriesVideo
  */
-@TableName(value ="VideoDanMu")
+@TableName(value ="UserVideoSeriesVideo")
 @Data
-public class VideoDanMu implements Serializable {
+public class UserVideoSeriesVideo implements Serializable {
     /**
-     * 自增ID
+     * 列表ID
      */
-    @TableId(type = IdType.AUTO)
-    private Integer danMuId;
+    @TableId
+    private Integer seriesId;
 
     /**
      * 视频ID
@@ -31,54 +31,25 @@ public class VideoDanMu implements Serializable {
     private String videoId;
 
     /**
-     * 唯一ID
-     */
-    private String fileId;
-
-    /**
      * 用户ID
      */
     private String userId;
 
     /**
-     * 发布时间
+     * 排序
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date postTime;
-
-    /**
-     * 内容
-     */
-    private String text;
-
-    /**
-     * 展示位置
-     */
-    private Integer mode;
-
-    /**
-     * 颜色
-     */
-    private String color;
-
-    /**
-     * 展示时间
-     */
-    private Integer time;
-
+    private Integer sort;
 
     @TableField(exist = false)
-    private String nickname;
-
-    @TableField(exist = false)
-    private String videoName;
+    private String videName;
 
     @TableField(exist = false)
     private String videoCover;
 
-
-
+    @TableField(exist = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date videoCreateTime;
 
 
     @TableField(exist = false)

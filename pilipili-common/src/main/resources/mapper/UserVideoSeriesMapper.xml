@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.UserVideoSeriesMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.UserVideoSeries">
+        <id property="seriesId" column="seriesId" jdbcType="INTEGER"/>
+        <result property="seriesName" column="seriesName" jdbcType="VARCHAR"/>
+        <result property="seriesDescription" column="seriesDescription" jdbcType="VARCHAR"/>
+        <result property="userId" column="userId" jdbcType="VARCHAR"/>
+        <result property="sort" column="sort" jdbcType="TINYINT"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        seriesId,seriesName,seriesDescription,
+        userId,sort,updateTime
+    </sql>
+    <update id="changeVideoSeriesSort">
+        <foreach collection="userVideoSeries" item="userVideoSeries" separator=";">
+            update UserVideoSeries set sort = #{userVideoSeries.sort}
+            where seriesId = #{userVideoSeries.seriesId} and userId = #{userVideoSeries.userId}
+        </foreach>
+    </update>
+
+
+    <select id="selectMaxSort" resultType="java.lang.Integer">
+        select ifnull(max(sort), 0)
+        from UserVideoSeries
+        where userId = #{userId}
+    </select>
+
+    <select id="getUserVideoSeries" resultType="com.pilipili.Model.entity.UserVideoSeries">
+        select t.*, v.videoCover as videoCover
+        from (select *,
+                     (select videoId
+                      from UserVideoSeriesVideo v
+                      where v.seriesId = s.seriesId
+                      order by sort
+                      limit 1) videoId
+              from UserVideoSeries s
+              where s.userId = #{userId}) t
+                 left join VideoInfo v on t.videoId = v.videoId
+        order by t.sort;
+    </select>
+
+    <resultMap id="base_result_map_video" type="com.pilipili.Model.entity.UserVideoSeries" extends="BaseResultMap">
+        <collection property="videoInfoList" column="seriesId" select="selectVideoList"/>
+    </resultMap>
+    <select id="selectVideoList" resultType="com.pilipili.Model.entity.VideoInfo">
+        select v.videoName, v.videoCover, v.createTime
+        from UserVideoSeriesVideo uv
+                 inner join VideoInfo v on uv.videoId = v.videoId
+        where uv.seriesId = #{seriesId}
+        order by uv.sort
+        limit 5
+    </select>
+    <select id="selectSeriesWithVideo" resultMap="base_result_map_video">
+        select
+        <include refid="Base_Column_List"/>
+        from UserVideoSeries
+        where userId = #{userId}
+        order by sort
+    </select>
+</mapper>

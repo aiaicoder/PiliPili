@@ -1,10 +1,13 @@
 package com.pilipili.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoDanMu;
 import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.enums.UserActionTypeEnum;
+import com.pilipili.enums.UserRoleEnum;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.mapper.VideoDanMuMapper;
 import com.pilipili.mapper.VideoInfoMapper;
@@ -41,12 +44,33 @@ public class VideoDanMuServiceImpl extends ServiceImpl<VideoDanMuMapper, VideoDa
         if (videoInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        if(videoInfo.getInteraction() != null && videoInfo.getInteraction().contains("1")){
+        if (videoInfo.getInteraction() != null && videoInfo.getInteraction().contains("1")) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "up主没有开启弹幕");
         }
         this.save(videoDanMu);
-        videoInfoMapper.updateCountInfo(videoDanMu.getVideoId(), UserActionTypeEnum.VIDEO_DANMU.getField(),1);
+        videoInfoMapper.updateCountInfo(videoDanMu.getVideoId(), UserActionTypeEnum.VIDEO_DANMU.getField(), 1);
         //todo 更新es
+    }
+
+    @Override
+    public Page<VideoDanMu> getDanMuList(Page<VideoDanMu> danMuPage, String videoId, String userId) {
+        return videoDanMuMapper.getDanMuList(danMuPage, videoId, userId);
+    }
+
+    @Override
+    public void deleteDanMu(Integer danMuId, UserInfo loginUser) {
+        VideoDanMu dbInfo = getById(danMuId);
+        if (dbInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        VideoInfo videoInfo = videoInfoService.getById(dbInfo.getVideoId());
+        if (videoInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if (!videoInfo.getUserId().equals(loginUser.getUserId()) || !loginUser.getUserRole().equals(UserRoleEnum.ADMIN.getValue())) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        removeById(danMuId);
     }
 
 }

@@ -15,6 +15,9 @@ import java.util.List;
 * @createDate 2024-11-16 15:09:58
 */
 public interface UserInfoService extends IService<UserInfo> {
+     UserInfo getUserDetailInfo(String currentUserId, String userId);
+
+
     /**
      * 用户注册
      *

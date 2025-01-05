@@ -19,6 +19,8 @@ public interface VideoCommentMapper extends BaseMapper<VideoComment> {
     Page<VideoComment> findListByPage(Page<VideoComment> page, @Param("commentQuery") CommentQuery commentQuery);
 
     void updateCountInfo(@Param("commentId") Integer commentId, @Param("field") String field, @Param("changeCount")Integer changeCount, @Param("oppositeField")String oppositeField, @Param("opChangeCount")Integer opChangeCount);
+
+    Page<VideoComment> getVideoCommentList(Page<VideoComment> commentPage, @Param("videoId") String videoId);
 }
 
 

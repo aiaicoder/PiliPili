@@ -5,15 +5,19 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.UUID;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Constant.RedisKeyConstant;
 import com.pilipili.Constant.RexConstant;
 import com.pilipili.Constant.UserConstant;
+import com.pilipili.Model.entity.UserFocus;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.exception.BusinessException;
+import com.pilipili.service.UserFocusService;
 import com.pilipili.utils.RedisUtils;
 import com.pilipili.utils.SqlUtils;
 import com.pilipili.utils.StringUtil;
@@ -55,6 +59,32 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Resource
     RedisUtils redisUtils;
 
+    @Resource
+    UserFocusService userFocusService;
+
+
+    @Override
+    public UserInfo getUserDetailInfo(String currentUserId, String userId) {
+        UserInfo userInfo = getById(userId);
+        if (userInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        long fansCount = userFocusService.count(Wrappers.lambdaQuery(UserFocus.class).eq(UserFocus::getFocusUserId, userId));
+        long focusCount = userFocusService.count(Wrappers.lambdaQuery(UserFocus.class).eq(UserFocus::getUserId, userId));
+        userInfo.setFocusCount((int) focusCount);
+        userInfo.setFansCount((int) fansCount);
+        if (currentUserId == null){
+            userInfo.setHavaFocus(false);
+        } else {
+            LambdaQueryWrapper<UserFocus> queryWrapper = Wrappers.lambdaQuery(UserFocus.class).
+                    eq(UserFocus::getFocusUserId, userId ).
+                    eq(UserFocus::getUserId, currentUserId);
+            UserFocus userFocus = userFocusService.getOne(queryWrapper);
+            userInfo.setHavaFocus(userFocus != null);
+        }
+        return userInfo;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String userRegister(String email, String password, String checkPassword, String checkCode, String checkCodeKey) {
@@ -62,11 +92,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (StringUtils.isAnyBlank(email, password, checkPassword, checkCode, checkCodeKey)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-        if (!checkCode.equals(redisUtils.get(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey))) {
-            log.error("checkCodeKey:{}", checkCodeKey);
-            redisUtils.delete(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey);
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片验证码错误");
-        }
+//        if (!checkCode.equals(redisUtils.get(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey))) {
+//            log.error("checkCodeKey:{}", checkCodeKey);
+//            redisUtils.delete(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey);
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片验证码错误");
+//        }
         if (password.length() < 8 || checkPassword.length() < 8 || checkPassword.length() > 32 || password.length() > 32) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
         }
@@ -123,12 +153,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (password.length() < 8) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
         }
-
-        if (!checkCode.equals(redisUtils.get(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey))) {
-            log.error("checkCodeKey:{}", checkCodeKey);
-            redisUtils.delete(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey);
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片验证码错误");
-        }
+//        if (!checkCode.equals(redisUtils.get(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey))) {
+//            log.error("checkCodeKey:{}", checkCodeKey);
+//            redisUtils.delete(RedisKeyConstant.REDIS_KEY_CHECK_CODE + checkCodeKey);
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片验证码错误");
+//        }
         // 2. 加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + password).getBytes());
 //         查询用户是否存在
@@ -263,7 +292,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         queryWrapper.eq(StringUtils.isNotBlank(email), "email", email);
         queryWrapper.eq(StringUtils.isNotBlank(userRole), "userRole", userRole);
         queryWrapper.like(StringUtils.isNotBlank(userProfile), "userProfile", userProfile);
-        queryWrapper.like(StringUtils.isNotBlank(userName), "NickName", userName);
+        queryWrapper.like(StringUtils.isNotBlank(userName), "nickName", userName);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
@@ -273,11 +302,29 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateUserInfo(UserInfo loginUser) {
-        boolean b = updateById(loginUser);
+    public boolean updateUserInfo(UserInfo updateUserInfo) {
+        UserInfo oldUser = this.getById(updateUserInfo.getUserId());
+        if (!oldUser.getNickName().equals(updateUserInfo.getNickName()) && oldUser.getCurrentCoinCount() < 5){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "硬币不足");
+        }
+        if (!oldUser.getNickName().equals(updateUserInfo.getNickName())){
+            UpdateWrapper<UserInfo> userUpdateWrapper = new UpdateWrapper<>();
+            int newCoinCount = oldUser.getCurrentCoinCount() - 5;
+            userUpdateWrapper.set("currentCoinCount", newCoinCount);
+            boolean b = this.update(userUpdateWrapper);
+            if (!b){
+                throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新失败");
+            }
+        }
+        boolean b = this.updateById(updateUserInfo);
         //更新保存的用户登录态
-        StpUtil.getSession().set(UserConstant.USER_LOGIN_STATE,loginUser);
+        StpUtil.getSession().set(UserConstant.USER_LOGIN_STATE,updateUserInfo);
         return b;
     }
+
+
+
+
+
 
 }

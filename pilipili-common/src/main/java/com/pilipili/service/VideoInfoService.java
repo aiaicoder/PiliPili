@@ -2,6 +2,7 @@ package com.pilipili.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoInfo;
 
 /**
@@ -11,4 +12,6 @@ import com.pilipili.Model.entity.VideoInfo;
 */
 public interface VideoInfoService extends IService<VideoInfo> {
 
+
+    void deleteVideo(UserInfo loginUser, String videoId);
 }

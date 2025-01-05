@@ -23,4 +23,6 @@ public interface VideoCommentService extends IService<VideoComment> {
     void cancelTopComment(String userId, Integer commentId);
 
     void deleteComment(String userId, Integer commentId);
+
+    Page<VideoComment> getVideoCommentList(Page<VideoComment> commentPage, String videoId);
 }

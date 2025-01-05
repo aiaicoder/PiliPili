@@ -8,19 +8,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Model.dto.File.UploadFileDto;
-import com.pilipili.Model.entity.VideoInfo;
-import com.pilipili.Model.entity.VideoInfoFile;
-import com.pilipili.Model.entity.VideoInfoFilePost;
-import com.pilipili.Model.entity.VideoInfoPost;
+import com.pilipili.Model.entity.*;
 import com.pilipili.Model.enums.VideoFileTransferResultEnum;
 import com.pilipili.Model.enums.VideoFileUpdateTypeEnum;
 import com.pilipili.Model.enums.VideoStatusEnum;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.config.AppConfig;
 import com.pilipili.exception.BusinessException;
+import com.pilipili.mapper.VideoDanMuMapper;
 import com.pilipili.mapper.VideoInfoFilePostMapper;
 import com.pilipili.mapper.VideoInfoMapper;
 import com.pilipili.mapper.VideoInfoPostMapper;
@@ -63,6 +62,9 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
 
     @Resource
     private VideoInfoFilePostMapper videoInfoFilePostMapper;
+
+    @Resource
+    private VideoDanMuMapper videoDanMuMapper;
 
     @Resource
     private VideoInfoMapper videoInfoMapper;
@@ -309,6 +311,25 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
 
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveVideoInteraction(VideoInfoPost bean) {
+        VideoInfoPost dbInfo = getById(bean.getVideoId());
+        if (dbInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        update(Wrappers.lambdaUpdate(VideoInfoPost.class)
+                .eq(VideoInfoPost::getVideoId, bean.getVideoId())
+                .eq(VideoInfoPost::getUserId, bean.getUserId())
+                .set(VideoInfoPost::getInteraction, bean.getInteraction()));
+        videoInfoService.update(Wrappers.lambdaUpdate(VideoInfo.class)
+                .eq(VideoInfo::getVideoId, bean.getVideoId())
+                .set(VideoInfo::getInteraction, bean.getInteraction()));
+    }
+
+
+
+
     /**
      * 转码文件为ts文件
      *
@@ -381,7 +402,7 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
         return !videoInfoPost.getVideoName().equals(dbInfo.getVideoName()) ||
                 !videoInfoPost.getVideoCover().equals(dbInfo.getVideoCover()) ||
                 !videoInfoPost.getTags().equals(dbInfo.getTags()) ||
-                !videoInfoPost.getIntroduction().equals(dbInfo.getIntroduction());
+                !videoInfoPost.getIntroduction().equals(dbInfo.getIntroduction() == null ? "": dbInfo.getIntroduction());
     }
 }
 

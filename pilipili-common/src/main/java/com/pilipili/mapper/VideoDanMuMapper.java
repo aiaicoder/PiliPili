@@ -1,7 +1,9 @@
 package com.pilipili.mapper;
 
-import com.pilipili.Model.entity.VideoDanMu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pilipili.Model.entity.VideoDanMu;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 15712
@@ -11,6 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface VideoDanMuMapper extends BaseMapper<VideoDanMu> {
 
+    Page<VideoDanMu> getDanMuList(Page<VideoDanMu> danMuPage, @Param("videoId") String videoId, @Param("userId") String userId);
 }
 
 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.UserFocusMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.UserFocus">
+            <id property="userId" column="userId" jdbcType="VARCHAR"/>
+            <id property="focusUserId" column="focusUserId" jdbcType="VARCHAR"/>
+            <result property="focusTime" column="focusTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        userId,focusUserId,focusTime
+    </sql>
+
+
+    <select id="getFansList" resultType="com.pilipili.Model.entity.UserFocus">
+        select u.userId, u.focusUserId, u.focusTime,
+            <if test="queryType != null">
+                i.nickName otherNickName,
+                i.userAvatar otherUserAvatar,
+                i.userId otherUserId,
+                i.userProfile otherUserProfile,
+                (select count(1) from UserFocus f where f.focusUserId = u.userId and f.userId = u.focusUserId) focusType
+                from UserFocus u
+            </if>
+        <if test="queryType == 0">
+            inner join userInfo i on i.userId = u.focusUserId
+            where u.userId = #{userId}
+        </if>
+        <if test="queryType == 1">
+            inner join userInfo i on i.userId = u.userId
+            where u.focusUserId = #{userId}
+        </if>
+        order by u.focusTime desc
+    </select>
+</mapper>

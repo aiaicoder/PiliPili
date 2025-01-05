@@ -6,34 +6,35 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * 视频弹幕
+ * 用户视频序列归档
  * @author 15712
- * @TableName VideoDanMu
+ * @TableName UserVideoSeries
  */
-@TableName(value ="VideoDanMu")
+@TableName(value ="UserVideoSeries")
 @Data
-public class VideoDanMu implements Serializable {
+public class UserVideoSeries implements Serializable {
     /**
-     * 自增ID
+     * 列表ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer danMuId;
+    private Integer seriesId;
 
     /**
-     * 视频ID
+     * 列表名称
      */
-    private String videoId;
+    private String seriesName;
 
     /**
-     * 唯一ID
+     * 描述
      */
-    private String fileId;
+    private String seriesDescription;
 
     /**
      * 用户ID
@@ -41,45 +42,22 @@ public class VideoDanMu implements Serializable {
     private String userId;
 
     /**
-     * 发布时间
+     * 排序
+     */
+    private Integer sort;
+
+    /**
+     * 更新时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date postTime;
-
-    /**
-     * 内容
-     */
-    private String text;
-
-    /**
-     * 展示位置
-     */
-    private Integer mode;
-
-    /**
-     * 颜色
-     */
-    private String color;
-
-    /**
-     * 展示时间
-     */
-    private Integer time;
-
+    private Date updateTime;
 
     @TableField(exist = false)
-    private String nickname;
+    private Integer videoCover;
 
     @TableField(exist = false)
-    private String videoName;
-
-    @TableField(exist = false)
-    private String videoCover;
-
-
-
-
+    private List<VideoInfo> videoInfoList;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

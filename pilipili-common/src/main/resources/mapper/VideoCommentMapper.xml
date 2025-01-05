@@ -64,4 +64,13 @@
         where VideoComment.videoId = #{videoId}
         order by #{commentQuery.orderBy}
     </select>
+    <select id="getVideoCommentList" resultType="com.pilipili.Model.entity.VideoComment">
+        select<include refid="Base_Column_List"/>v2.videoCover,v2.videName,u.nikeName,u.userAvatar,u2.nickName as
+        replyNikeName,u2.userAvatar as replyUserAvatar
+        from VideoComment v
+        inner join VideoInfo v2 on v.videoId = v2.videoId
+        left join userInfo u2 on v.replyUserId = u2.userId
+        left join userInfo u on v.userId = u.userId
+        where v.videoId = #{videoId}
+    </select>
 </mapper>

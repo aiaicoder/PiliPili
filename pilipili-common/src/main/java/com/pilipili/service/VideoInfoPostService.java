@@ -1,5 +1,7 @@
 package com.pilipili.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pilipili.Model.entity.VideoDanMu;
 import com.pilipili.Model.entity.VideoInfoFilePost;
 import com.pilipili.Model.entity.VideoInfoPost;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -17,4 +19,10 @@ public interface VideoInfoPostService extends IService<VideoInfoPost> {
     void transferVideoFile(VideoInfoFilePost videoInfoFilePost);
 
     void auditVideo(String videoId, Integer status, String reason);
+
+    void saveVideoInteraction(VideoInfoPost bean);
+
+
+
+
 }

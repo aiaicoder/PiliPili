@@ -68,8 +68,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="UserAction" />
-                  <option name="tableName" value="UserAction" />
+                  <option name="className" value="UserFocus" />
+                  <option name="tableName" value="UserFocus" />
                 </TableUIInfo>
               </list>
             </option>

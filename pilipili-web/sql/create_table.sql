@@ -179,3 +179,29 @@ CREATE TABLE `VideoComment` (
                                  KEY `idxVideoId` (`videoId`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='评论';
 
+CREATE TABLE `UserFocus` (
+    `userId` varchar(10) NOT NULL COMMENT '用户ID',
+    `focusUserId` varchar(10) NOT NULL COMMENT '用户ID',
+    `focusTime` datetime DEFAULT NULL,
+    PRIMARY KEY (`userId`, `focusUserId`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `UserVideoSeries` (
+    `seriesId` int(11) NOT NULL AUTO_INCREMENT COMMENT '列表ID',
+    `seriesName` varchar(100) NOT NULL COMMENT '列表名称',
+    `seriesDescription` varchar(200) DEFAULT NULL COMMENT '描述',
+    `userId` varchar(10) NOT NULL COMMENT '用户ID',
+    `sort` tinyint(4) NOT NULL COMMENT '排序',
+    `updateTime` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`seriesId`) USING BTREE,
+    KEY `idxUserId` (`userId`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='用户视频序列归档';
+
+
+CREATE TABLE `UserVideoSeriesVideo` (
+    `seriesId` int(11) NOT NULL COMMENT '列表ID',
+    `videoId` varchar(10) NOT NULL COMMENT '视频ID',
+    `userId` varchar(10) NOT NULL COMMENT '用户ID',
+    `sort` tinyint(4) NOT NULL COMMENT '排序',
+    PRIMARY KEY (`seriesId`, `videoId`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;

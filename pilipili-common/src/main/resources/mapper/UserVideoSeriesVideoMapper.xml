@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.UserVideoSeriesVideoMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.UserVideoSeriesVideo">
+            <id property="seriesId" column="seriesId" jdbcType="INTEGER"/>
+            <id property="videoId" column="videoId" jdbcType="VARCHAR"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="sort" column="sort" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        seriesId,videoId,userId,
+        sort
+    </sql>
+    <select id="selectMaxSort" resultType="java.lang.Integer">
+        select ifnull(max(sort),0) from UserVideoSeriesVideo where userId = #{userId}
+    </select>
+
+    <select id="getDetailSeriesVideo" resultType="com.pilipili.Model.entity.UserVideoSeriesVideo">
+        select <include refid="Base_Column_List"/>
+            ,v.videoName,v.videoCover,v.createTime
+        from UserVideoSeriesVideo inner join VideoInfo v on UserVideoSeriesVideo.videoId = v.videoId
+        where seriesId = #{seriesId}
+    </select>
+</mapper>

@@ -65,18 +65,6 @@ public class UserInfoVo implements Serializable {
     private String userRole;
 
     /**
-     * 创建时间
-     */
-    private Date joinTime;
-
-    /**
-     * 最后登录时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date lastLoginTime;
-
-    /**
      * 最后登录ip
      */
     private String lastLoginIp;
@@ -97,6 +85,13 @@ public class UserInfoVo implements Serializable {
     private Integer totalCoinCount;
 
     /**
+     * 等级
+     */
+    private String grade;
+
+
+
+    /**
      * 当前金币数量
      */
     private Integer currentCoinCount;
@@ -112,18 +107,16 @@ public class UserInfoVo implements Serializable {
      */
     private Integer focusCount;
 
+    private Integer likeCount;
+
+    private Integer playCount;
+
+    private Boolean havaFocus;
+
     /**
      * 主题
      */
     private Integer theme;
-
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
-
 
 
     @TableField(exist = false)

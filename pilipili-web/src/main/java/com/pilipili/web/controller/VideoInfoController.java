@@ -23,6 +23,7 @@ import com.pilipili.service.VideoInfoFileService;
 import com.pilipili.service.VideoInfoService;
 import com.pilipili.utils.RedisUtils;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,7 +83,10 @@ public class VideoInfoController {
 
     @GetMapping("/getVideoInfo")
     @ApiOperation("获取视频详情")
-    public BaseResponse<VideoInfoAndUserActionVo> getVideoInfo(@NotEmpty String videoId) {
+    public BaseResponse<VideoInfoAndUserActionVo> getVideoInfo(String videoId) {
+        if (StringUtils.isBlank(videoId)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
         VideoInfo videoInfo = videoInfoService.getById(videoId);
         if (videoInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
@@ -107,7 +111,10 @@ public class VideoInfoController {
 
     @GetMapping("/getVideoPList")
     @ApiOperation("获取视频P数")
-    public BaseResponse<List<VideoInfoFile>> loadVideoPList(@NotEmpty String videoId) {
+    public BaseResponse<List<VideoInfoFile>> loadVideoPList(String videoId) {
+        if (StringUtils.isEmpty(videoId)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
         QueryWrapper<VideoInfoFile> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("videoId", videoId);
         queryWrapper.orderByAsc("fileIndex");

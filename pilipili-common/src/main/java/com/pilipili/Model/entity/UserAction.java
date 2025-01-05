@@ -10,6 +10,7 @@ import lombok.Data;
 
 /**
  * 用户行为 点赞、评论
+ * @author 15712
  * @TableName UserAction
  */
 @TableName(value ="UserAction")
@@ -55,6 +56,34 @@ public class UserAction implements Serializable {
      * 操作时间
      */
     private Date actionTime;
+
+
+    /**
+     * 视频封面
+     */
+    @TableField(exist = false)
+    private String videoCover;
+
+    /**
+     * 视频名称
+     */
+    @TableField(exist = false)
+    private String videoName;
+
+    /**
+     * 用户昵称
+     */
+    @TableField(exist = false)
+    private String otherNickName;
+
+
+    /**
+     * 创建时间
+     */
+    @TableField(exist = false)
+    private Date videoCreateTime;
+
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -1,5 +1,7 @@
 package com.pilipili.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoDanMu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -11,4 +13,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface VideoDanMuService extends IService<VideoDanMu> {
 
     void saveVideoDanMu(VideoDanMu videoDanMu);
+
+    Page<VideoDanMu> getDanMuList(Page<VideoDanMu> objectPage, String videoId, String userId);
+
+    void deleteDanMu(Integer danMuId, UserInfo loginUser);
 }

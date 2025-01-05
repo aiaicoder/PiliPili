@@ -10,6 +10,7 @@ import com.pilipili.Model.entity.CategoryInfo;
 import com.pilipili.Model.entity.VideoInfoFilePost;
 import com.pilipili.Model.enums.DateTimePatternEnum;
 import com.pilipili.config.AppConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -262,6 +263,9 @@ public class RedisUtils {
      */
     public VideoInfoFilePost getFileFromTransferQueue() {
         String s = stringRedisTemplate.opsForList().rightPop(REDIS_KEY_TRANSFER_FILE);
+        if (StringUtils.isEmpty(s)) {
+            return null;
+        }
         return JSONUtil.toBean(s, VideoInfoFilePost.class);
     }
 

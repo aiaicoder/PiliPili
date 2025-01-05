@@ -127,5 +127,17 @@ public class UserInfo implements Serializable {
     private Date updateTime;
 
     @TableField(exist = false)
+    private Integer focusCount;
+    @TableField(exist = false)
+    private Integer likeCount;
+    @TableField(exist = false)
+    private Integer playCount;
+    @TableField(exist = false)
+    private Boolean havaFocus;
+    @TableField(exist = false)
+    private Integer fansCount;
+
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

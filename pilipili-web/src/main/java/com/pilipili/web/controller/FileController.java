@@ -6,6 +6,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Model.dto.File.PreUploadFileRequest;
 import com.pilipili.Model.dto.File.UploadFileDto;
+import com.pilipili.Model.dto.video.VideoUpLoadRequest;
 import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoInfoFile;
 import com.pilipili.Model.enums.DateTimePatternEnum;
@@ -112,8 +113,13 @@ public class FileController {
     @PostMapping("/uploadVideo")
     @ApiOperation("上传视频")
     @SaCheckLogin
-    public BaseResponse<String> uploadVideo(@RequestPart("file") MultipartFile chunkFile, @NotNull Integer chunkIndex, @NotEmpty String uploadId) throws Exception {
+    public BaseResponse<String> uploadVideo(@RequestPart("file") MultipartFile chunkFile, @RequestBody VideoUpLoadRequest videoUpLoadRequest) throws Exception {
+        if (videoUpLoadRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
         UserInfo loginUser = userInfoService.getLoginUser();
+        String uploadId = videoUpLoadRequest.getUploadId();
+        Integer chunkIndex = videoUpLoadRequest.getChunkIndex();
         String userId = loginUser.getUserId();
         UploadFileDto preUploadVideoFile = redisUtils.getPreUploadVideoFile(userId, uploadId);
         if (preUploadVideoFile == null) {
@@ -144,7 +150,11 @@ public class FileController {
     @PostMapping("/deleteUploadVideo")
     @ApiOperation("删除临时上传的视频")
     @SaCheckLogin
-    public BaseResponse<String> deleteUploadVideo(@NotEmpty String uploadId) throws Exception {
+    public BaseResponse<String> deleteUploadVideo(@RequestBody VideoUpLoadRequest videoUpLoadRequest) throws Exception {
+        if (videoUpLoadRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String uploadId = videoUpLoadRequest.getUploadId();
         UserInfo loginUser = userInfoService.getLoginUser();
         String userId = loginUser.getUserId();
         UploadFileDto preUploadVideoFile = redisUtils.getPreUploadVideoFile(userId, uploadId);
