@@ -9,6 +9,8 @@ import com.pilipili.Model.entity.UserAction;
 import com.pilipili.Model.entity.VideoComment;
 import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.common.ErrorCode;
+import com.pilipili.component.EsSearchComponent;
+import com.pilipili.enums.SearchOrderTypeEnum;
 import com.pilipili.enums.UserActionTypeEnum;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.mapper.UserInfoMapper;
@@ -37,6 +39,9 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
 
     @Resource
     private VideoInfoMapper videoInfoMapper;
+
+    @Resource
+    private EsSearchComponent esSearchComponent;
 
 
     @Resource
@@ -78,7 +83,7 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
                 Integer changeCount = dbUserAction == null ? 1 : -1;
                 videoInfoMapper.updateCountInfo(videoId, actionTypeEnum.getField(), changeCount);
                 if (actionTypeEnum == UserActionTypeEnum.VIDEO_COLLECT){
-                    //todo 更新es的收藏数量
+                    esSearchComponent.updateDocCount(videoId, SearchOrderTypeEnum.VIDEO_COLLECT.getField(), changeCount);
                 }
                 break;
             case VIDEO_COIN:

@@ -23,6 +23,4 @@ public interface VideoInfoPostService extends IService<VideoInfoPost> {
     void saveVideoInteraction(VideoInfoPost bean);
 
 
-
-
 }

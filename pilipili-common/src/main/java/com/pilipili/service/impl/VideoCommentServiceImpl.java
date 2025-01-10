@@ -11,11 +11,12 @@ import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.enums.CommentTopTypeEnum;
 import com.pilipili.enums.UserActionTypeEnum;
+import com.pilipili.enums.UserRoleEnum;
 import com.pilipili.exception.BusinessException;
+import com.pilipili.mapper.VideoCommentMapper;
 import com.pilipili.mapper.VideoInfoMapper;
 import com.pilipili.service.UserInfoService;
 import com.pilipili.service.VideoCommentService;
-import com.pilipili.mapper.VideoCommentMapper;
 import com.pilipili.service.VideoInfoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,20 +120,22 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteComment(String userId, Integer commentId) {
+    public void deleteComment(UserInfo loginUser, Integer commentId) {
         VideoComment comment = getById(commentId);
-        if (comment == null){
+        if (comment == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        if (!userId.equals(comment.getVideoUserId()) || !userId.equals(comment.getUserId())){
-            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR,"无权限操作");
+        if (!loginUser.getUserId().equals(comment.getVideoUserId()) || !loginUser.getUserId().equals(comment.getUserId())
+                || !loginUser.getUserRole().equals(UserRoleEnum.ADMIN.getValue())
+        ) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR, "无权限操作");
         }
         this.removeById(commentId);
-        videoInfoMapper.updateCountInfo(comment.getVideoId(), UserActionTypeEnum.VIDEO_COMMENT.getField(),-1);
+        videoInfoMapper.updateCountInfo(comment.getVideoId(), UserActionTypeEnum.VIDEO_COMMENT.getField(), -1);
         //删除二级评论
         if (comment.getPCommentId() != 0) {
             QueryWrapper<VideoComment> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("pCommentId",commentId);
+            queryWrapper.eq("pCommentId", commentId);
             long count = count(queryWrapper);
             remove(queryWrapper);
             videoInfoMapper.updateCountInfo(comment.getVideoId(), UserActionTypeEnum.VIDEO_COMMENT.getField(), (int) -count);

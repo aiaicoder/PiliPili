@@ -1,4 +1,4 @@
-package com.pilipili.admin.config.Mp;
+package com.pilipili.config.Mp;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;

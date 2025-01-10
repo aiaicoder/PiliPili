@@ -205,3 +205,40 @@ CREATE TABLE `UserVideoSeriesVideo` (
     `sort` tinyint(4) NOT NULL COMMENT '排序',
     PRIMARY KEY (`seriesId`, `videoId`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `UserMessage` (
+                                `messageId` int(11) NOT NULL AUTO_INCREMENT COMMENT '消息ID号',
+                                `userId` varchar(10) NOT NULL COMMENT '用户ID',
+                                `videoId` varchar(10) DEFAULT NULL COMMENT '主体ID',
+                                `messageType` tinyint(1) DEFAULT NULL COMMENT '消息类型',
+                                `sendUserId` varchar(10) DEFAULT NULL COMMENT '发送人ID',
+                                `readType` tinyint(1) DEFAULT NULL COMMENT '0:未读 1:已读',
+                                `createTime` datetime DEFAULT NULL COMMENT '创建时间',
+                                `extendJson` text COMMENT '扩展信息',
+                                PRIMARY KEY (`messageId`) USING BTREE,
+                                KEY `idxUserId` (`userId`) USING BTREE,
+                                KEY `idxReadType` (`readType`) USING BTREE,
+                                KEY `idxMessageType` (`messageType`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='用户消息表';
+
+
+CREATE TABLE `VideoPlayHistory` (
+                                      `userId` varchar(10) NOT NULL COMMENT '用户ID',
+                                      `videoId` varchar(10) NOT NULL COMMENT '视频ID',
+                                      `fileIndex` int(11) DEFAULT NULL COMMENT '子集索引',
+                                      `lastUpdateTime` datetime NOT NULL COMMENT '最后更新时间',
+                                      PRIMARY KEY (`userId`, `videoId`) USING BTREE,
+                                      KEY `idxVideoId` (`videoId`) USING BTREE,
+                                      KEY `idxUserId` (`userId`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='视频播放历史';
+
+
+CREATE TABLE `StatisticsInfo` (
+                                   `statisticsDate` varchar(10) NOT NULL COMMENT '统计日期',
+                                   `userId` varchar(10) NOT NULL COMMENT '用户ID',
+                                   `dataType` tinyint(1) NOT NULL COMMENT '数据统计类型',
+                                   `statisticsCount` int(11) DEFAULT NULL COMMENT '统计数量',
+                                   PRIMARY KEY (`statisticsDate`, `userId`, `dataType`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='数据统计';
+

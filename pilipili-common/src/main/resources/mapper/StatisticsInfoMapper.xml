@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.StatisticsInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.StatisticsInfo">
+            <id property="statisticsDate" column="statisticsDate" jdbcType="VARCHAR"/>
+            <id property="userId" column="userId" jdbcType="VARCHAR"/>
+            <id property="dataType" column="dataType" jdbcType="TINYINT"/>
+            <result property="statisticsCount" column="statisticsCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        statisticsDate,userId,dataType,
+        statisticsCount
+    </sql>
+</mapper>

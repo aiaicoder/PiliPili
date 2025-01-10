@@ -6,6 +6,7 @@ import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoDanMu;
 import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.common.ErrorCode;
+import com.pilipili.component.EsSearchComponent;
 import com.pilipili.enums.UserActionTypeEnum;
 import com.pilipili.enums.UserRoleEnum;
 import com.pilipili.exception.BusinessException;
@@ -13,6 +14,7 @@ import com.pilipili.mapper.VideoDanMuMapper;
 import com.pilipili.mapper.VideoInfoMapper;
 import com.pilipili.service.VideoDanMuService;
 import com.pilipili.service.VideoInfoService;
+import org.elasticsearch.action.get.GetRequest;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,6 +39,11 @@ public class VideoDanMuServiceImpl extends ServiceImpl<VideoDanMuMapper, VideoDa
     @Resource
     private VideoInfoMapper videoInfoMapper;
 
+    @Resource
+    private EsSearchComponent esSearchComponent;
+
+
+
     @Override
     public void saveVideoDanMu(VideoDanMu videoDanMu) {
         //先查询视频是否存在
@@ -49,8 +56,9 @@ public class VideoDanMuServiceImpl extends ServiceImpl<VideoDanMuMapper, VideoDa
         }
         this.save(videoDanMu);
         videoInfoMapper.updateCountInfo(videoDanMu.getVideoId(), UserActionTypeEnum.VIDEO_DANMU.getField(), 1);
-        //todo 更新es
+        esSearchComponent.saveDoc(videoInfo);
     }
+
 
     @Override
     public Page<VideoDanMu> getDanMuList(Page<VideoDanMu> danMuPage, String videoId, String userId) {

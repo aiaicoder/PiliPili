@@ -1,4 +1,4 @@
-package com.pilipili.web.config.redis;
+package com.pilipili.config.redis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;

@@ -6,7 +6,9 @@ import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.Model.entity.VideoInfoFilePost;
 import com.pilipili.common.ErrorCode;
+import com.pilipili.component.EsSearchComponent;
 import com.pilipili.config.AppConfig;
+import com.pilipili.enums.UserActionTypeEnum;
 import com.pilipili.enums.UserRoleEnum;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.mapper.VideoInfoMapper;
@@ -15,6 +17,7 @@ import com.pilipili.system.SysSettingDTO;
 import com.pilipili.utils.SysSettingUtil;
 import jodd.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -43,19 +46,27 @@ public class VideoInfoServiceImpl extends ServiceImpl<VideoInfoMapper, VideoInfo
     private VideoInfoFilePostService videoInfoFilePostService;
 
     @Resource
+    @Lazy
     private VideoDanMuService videoDanMuService;
 
     @Resource
+    @Lazy
     private VideoCommentService videoCommentService;
 
     @Resource
     private VideoInfoFileService videoInfoFileService;
 
     @Resource
+    private VideoInfoMapper videoInfoMapper;
+
+    @Resource
     private AppConfig appConfig;
 
     @Resource
     private SysSettingUtil sysSettingUtil;
+
+    @Resource
+    private EsSearchComponent esSearchComponent;
 
     @Override
     public void deleteVideo(UserInfo loginUser, String videoId) {
@@ -71,7 +82,8 @@ public class VideoInfoServiceImpl extends ServiceImpl<VideoInfoMapper, VideoInfo
         videoInfoPostService.removeById(videoId);
         SysSettingDTO sysSetting = sysSettingUtil.getSysSetting();
         //todo 删除用户硬币
-        //todo 删除es信息
+
+        esSearchComponent.deleteDoc(videoId);
         executorService.execute(() -> {
             //删除视频分p文件
             videoInfoFileService.removeById(videoId);
@@ -94,6 +106,11 @@ public class VideoInfoServiceImpl extends ServiceImpl<VideoInfoMapper, VideoInfo
                 }
             }
         });
+    }
+
+    @Override
+    public void addReadCount(String videoId) {
+        videoInfoMapper.updateCountInfo(videoId, UserActionTypeEnum.VIDEO_PLAY.getField(), 1);
     }
 }
 

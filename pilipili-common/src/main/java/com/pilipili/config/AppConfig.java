@@ -35,5 +35,12 @@ public class AppConfig {
     public String folder;
 
 
+    @Value("${es.host.port:10.101.100.2:9200}")
+    public String esHostPort;
+
+    @Value("${es.index.video.name:pilipili_video}")
+    public String esIndexVideoName;
+
+
 
 }

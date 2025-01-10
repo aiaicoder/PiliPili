@@ -7,9 +7,11 @@ import com.pilipili.Model.Vo.VideoInfoPostVo;
 import com.pilipili.Model.dto.video.VideoInfoAuditRequest;
 import com.pilipili.Model.dto.video.VideoInfoPostListRequest;
 import com.pilipili.Model.entity.UserInfo;
+import com.pilipili.annotation.RecordUserMessage;
 import com.pilipili.common.BaseResponse;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.common.ResultUtils;
+import com.pilipili.enums.MessageTypeEnum;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.mapper.VideoInfoPostMapper;
 import com.pilipili.service.UserInfoService;
@@ -34,6 +36,7 @@ import javax.annotation.Resource;
 public class VideoInfoController {
     @Resource
     private VideoInfoService videoInfoService;
+
     @Resource
     private VideoInfoFilePostService videoInfoFilePostService;
 
@@ -65,6 +68,7 @@ public class VideoInfoController {
     @PostMapping("/auditVideo")
     @ApiOperation("审核视频")
     @SaCheckLogin
+    @RecordUserMessage(messageType = MessageTypeEnum.SYS)
     public BaseResponse<Boolean> auditVideo(VideoInfoAuditRequest videoInfoAuditRequest) {
         if (videoInfoAuditRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -76,6 +80,6 @@ public class VideoInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         videoInfoPostService.auditVideo(videoId, status, reason);
-        return ResultUtils.success(true);
+        return ResultUtils.success(null);
     }
 }

@@ -12,7 +12,10 @@ import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.Model.entity.VideoInfoFile;
 import com.pilipili.common.BaseResponse;
 import com.pilipili.common.ErrorCode;
+import com.pilipili.common.PageRequest;
 import com.pilipili.common.ResultUtils;
+import com.pilipili.component.EsSearchComponent;
+import com.pilipili.enums.SearchOrderTypeEnum;
 import com.pilipili.enums.UserActionTypeEnum;
 import com.pilipili.enums.VideoRecommendTypeEnum;
 import com.pilipili.exception.BusinessException;
@@ -33,6 +36,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="https://github.com/aiaicoder">  小新
@@ -59,6 +63,8 @@ public class VideoInfoController {
     @Resource
     private RedisUtils redisUtils;
 
+    @Resource
+    private EsSearchComponent esSearchComponent;
 
 
     @GetMapping("/loadRecommendVideo")
@@ -127,5 +133,38 @@ public class VideoInfoController {
     @ApiOperation("上报视频播放在线人数")
     public BaseResponse<Integer> reportVideoPlayOnline(@NotEmpty String fileId, @NotEmpty String deviceId) {
         return ResultUtils.success(redisUtils.reportVideoPlayOnline(fileId, deviceId));
+    }
+
+
+    @GetMapping("/recommend")
+    @ApiOperation("获取推荐视频")
+    public BaseResponse<List<VideoInfoVo>> getVideoRecommend(@NotEmpty String keyword, @NotEmpty String videoId) {
+
+        List<VideoInfoVo> videoInfoVoList = esSearchComponent.searchDoc(false, keyword, SearchOrderTypeEnum.VIDEO_PLAY.getType(), 1, 20).getRecords();
+        return ResultUtils.success(videoInfoVoList.stream().filter(videoInfoVo -> !videoInfoVo.getVideoId().equals(videoId)).collect(Collectors.toList()));
+    }
+
+
+    @GetMapping("/getSearchKeyTop")
+    @ApiOperation("获取搜索热词")
+    public BaseResponse<List<String>> getSearchKeyTop() {
+        List<String> searchKeyTop = redisUtils.getKeyWord(10);
+        return ResultUtils.success(searchKeyTop);
+    }
+
+    @GetMapping("/searchVideo")
+    @ApiOperation("搜索视频")
+    public BaseResponse<Page<VideoInfoVo>> searchVideo(@NotEmpty String keyword, Integer orderType, PageRequest pageRequest) {
+        redisUtils.addKeyWordCount(keyword);
+        return ResultUtils.success(esSearchComponent.searchDoc(true, keyword, orderType, pageRequest.getCurrent(), pageRequest.getPageSize()));
+    }
+
+
+    @GetMapping("/loadHotVideoList")
+    @ApiOperation("搜索视频")
+    public BaseResponse<Page<VideoInfoVo>> loadHotVideoList(PageRequest pageRequest) {
+        Page<VideoInfoVo> page = new Page<>(pageRequest.getCurrent(), pageRequest.getPageSize());
+        Page<VideoInfoVo> videoInfoVoPage = videoInfoMapper.load24HoursHotVideo(page);
+        return ResultUtils.success(videoInfoVoPage);
     }
 }

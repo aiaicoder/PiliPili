@@ -1,9 +1,8 @@
 package com.pilipili.service;
 
-import javax.validation.constraints.NotNull;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pilipili.Model.dto.Comment.CommentQuery;
+import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoComment;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,7 +21,7 @@ public interface VideoCommentService extends IService<VideoComment> {
 
     void cancelTopComment(String userId, Integer commentId);
 
-    void deleteComment(String userId, Integer commentId);
+    void deleteComment(UserInfo loginUser, Integer commentId);
 
     Page<VideoComment> getVideoCommentList(Page<VideoComment> commentPage, String videoId);
 }

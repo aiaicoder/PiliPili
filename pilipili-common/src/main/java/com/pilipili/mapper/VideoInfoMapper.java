@@ -27,6 +27,8 @@ public interface VideoInfoMapper extends BaseMapper<VideoInfo> {
     );
 
     void updateCountInfo( @Param("videoId") String videoId,  @Param("field") String field, @Param("changeCount") Integer changeCount);
+
+    Page<VideoInfoVo> load24HoursHotVideo(Page<VideoInfoVo> page);
 }
 
 

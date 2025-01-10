@@ -1,4 +1,4 @@
-package com.pilipili.web.config.Mp;
+package com.pilipili.config.Mp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.cache.CacheKey;

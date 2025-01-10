@@ -55,6 +55,7 @@ public interface RedisKeyConstant {
     //用户上传文件记录
     String REDIS_USER_UPLOAD_FILE_KEY = REDIS_KEY_PREFIX + "user_upload_file:";
 
+    //管理员token
     String REDIS_ADMIN_TOKEN_KEY = REDIS_KEY_PREFIX + "admin_token:";
 
 
@@ -72,6 +73,8 @@ public interface RedisKeyConstant {
 
     String REDIS_KEY_TRANSFER_FILE = REDIS_KEY_PREFIX + "trans:queue:";
 
+    String REDIS_KEY_QUEUE_VIDEO_PLAY = REDIS_KEY_PREFIX + "video:play:queue:";
+
     //视频在线
     String REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE_PREFIX = REDIS_KEY_PREFIX + "video:play:online:";
 
@@ -80,6 +83,13 @@ public interface RedisKeyConstant {
     String REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX = "user:";
 
     String REDIS_KEY_VIDEO_PLAY_COUNT_USER = REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX + REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX + "%s:%s";
+
+    String REDIS_KEY_VIDEO_SEARCH_COUNT = REDIS_KEY_PREFIX + "video:search:";
+
+    String REDIS_KEY_VIDEO_PLAY_COUNT = REDIS_KEY_VIDEO_SEARCH_COUNT + "video:playCount:";
+
+
+
 
 
 }

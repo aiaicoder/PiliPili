@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.pilipili.Constant.CommonConstant;
+import com.pilipili.Model.Vo.VideoPlayInfoVo;
 import com.pilipili.Model.dto.File.PreUploadFileRequest;
 import com.pilipili.Model.dto.File.UploadFileDto;
 import com.pilipili.Model.dto.video.VideoUpLoadRequest;
@@ -206,7 +207,15 @@ public class FileController {
         }
         String filePath = videoInfoFile.getFilePath();
         readFile(response, filePath + "/" + CommonConstant.M3U8_NAME);
-        //TODO 更新视频的阅读信息
+        //更新视频的阅读信息
+        VideoPlayInfoVo videoPlayInfoVo = new VideoPlayInfoVo();
+        videoPlayInfoVo.setVideoId(videoInfoFile.getVideoId());
+        videoPlayInfoVo.setFileIndex(videoInfoFile.getFileIndex());
+        UserInfo loginUserNoEx = userInfoService.getLoginUserNoEx();
+        if (loginUserNoEx != null) {
+            videoPlayInfoVo.setUserId(loginUserNoEx.getUserId());
+        }
+        redisUtils.addVideoPlayInfo(videoPlayInfoVo);
     }
 
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilipili.mapper.UserMessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.UserMessage">
+            <id property="messageId" column="messageId" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="videoId" column="videoId" jdbcType="VARCHAR"/>
+            <result property="messageType" column="messageType" jdbcType="TINYINT"/>
+            <result property="sendUserId" column="sendUserId" jdbcType="VARCHAR"/>
+            <result property="readType" column="readType" jdbcType="TINYINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="extendJson" column="extendJson" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        messageId,userId,videoId,
+        messageType,sendUserId,readType,
+        createTime,extendJson
+    </sql>
+</mapper>

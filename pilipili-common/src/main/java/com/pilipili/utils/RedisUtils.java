@@ -1,10 +1,12 @@
 package com.pilipili.utils;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Constant.RedisKeyConstant;
+import com.pilipili.Model.Vo.VideoPlayInfoVo;
 import com.pilipili.Model.dto.File.UploadFileDto;
 import com.pilipili.Model.entity.CategoryInfo;
 import com.pilipili.Model.entity.VideoInfoFilePost;
@@ -16,9 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.pilipili.Constant.RedisKeyConstant.*;
@@ -286,9 +286,59 @@ public class RedisUtils {
 
     }
 
-
+    /**
+     * 减少播放量
+     *
+     * @param key 播放量key
+     */
     public void decrement(String key) {
-
         stringRedisTemplate.opsForValue().decrement(key);
+    }
+
+
+    /**
+     * 增加搜索关键词的计数
+     *
+     * @param keyword 搜索关键词
+     */
+    public void addKeyWordCount(String keyword) {
+        stringRedisTemplate.opsForZSet().incrementScore(REDIS_KEY_VIDEO_SEARCH_COUNT, keyword, 1);
+    }
+
+    public List<String> getKeyWord(Integer top) {
+        Set<String> range = stringRedisTemplate.opsForZSet().range(REDIS_KEY_VIDEO_SEARCH_COUNT, 0, top - 1);
+        if (range != null) {
+            return new ArrayList<>(range);
+        }
+        return new ArrayList<>();
+    }
+
+
+    /**
+     * 添加播放信息
+     *
+     * @param videoPlayInfoVo
+     */
+    public void addVideoPlayInfo(VideoPlayInfoVo videoPlayInfoVo) {
+        stringRedisTemplate.opsForList().leftPush(REDIS_KEY_QUEUE_VIDEO_PLAY, JSONUtil.toJsonStr(videoPlayInfoVo));
+    }
+
+
+    /**
+     * 获取播放信息
+     */
+    public VideoPlayInfoVo getVideoPlayInfo() {
+        String playInfoStr = stringRedisTemplate.opsForList().rightPop(REDIS_KEY_QUEUE_VIDEO_PLAY);
+        if (StringUtils.isEmpty(playInfoStr)) {
+            return null;
+        }
+        return JSONUtil.toBean(playInfoStr, VideoPlayInfoVo.class);
+    }
+
+
+    public void recordVideoPlayCount(String videoId) {
+        String date = DateUtil.format(new Date(), DateTimePatternEnum.YYYYMMDD.getPattern());
+        stringRedisTemplate.opsForValue().increment(REDIS_KEY_VIDEO_PLAY_COUNT + videoId, 1);
+        stringRedisTemplate.expire(REDIS_KEY_VIDEO_PLAY_COUNT + date + ":" + videoId, REDIS_FILE_EXPIRE_ONE_DAY, TimeUnit.SECONDS);
     }
 }

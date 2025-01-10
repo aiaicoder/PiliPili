@@ -31,4 +31,5 @@ public class VideoInfoAuditRequest implements Serializable {
      * 原因
      */
     private String reason;
+
 }

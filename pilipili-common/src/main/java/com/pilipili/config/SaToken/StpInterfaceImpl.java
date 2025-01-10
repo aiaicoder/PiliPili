@@ -1,4 +1,4 @@
-package com.pilipili.web.config.SaToken;
+package com.pilipili.config.SaToken;
 
 import cn.dev33.satoken.stp.StpInterface;
 

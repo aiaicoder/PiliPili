@@ -14,4 +14,6 @@ public interface VideoInfoService extends IService<VideoInfo> {
 
 
     void deleteVideo(UserInfo loginUser, String videoId);
+
+    void addReadCount(String videoId);
 }

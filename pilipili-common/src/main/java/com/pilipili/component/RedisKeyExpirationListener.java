@@ -1,4 +1,4 @@
-package com.pilipili.web.component;
+package com.pilipili.component;
 
 import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Constant.RedisKeyConstant;

@@ -11,10 +11,12 @@ import com.pilipili.Model.entity.UserAction;
 import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoComment;
 import com.pilipili.Model.entity.VideoInfo;
+import com.pilipili.annotation.RecordUserMessage;
 import com.pilipili.common.BaseResponse;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.common.ResultUtils;
 import com.pilipili.enums.CommentTopTypeEnum;
+import com.pilipili.enums.MessageTypeEnum;
 import com.pilipili.enums.UserActionTypeEnum;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.mapper.VideoCommentMapper;
@@ -47,16 +49,10 @@ public class VideoCommentController {
 
 
     @Resource
-    private VideoCommentMapper videoCommentMapper;
-
-    @Resource
     private UserActionService userActionService;
 
     @Resource
     private VideoInfoService videoInfoService;
-
-    @Resource
-    private VideoInfoMapper videoInfoMapper;
 
     @Resource
     private UserInfoService userInfoService;
@@ -65,6 +61,7 @@ public class VideoCommentController {
     @PostMapping("/postVideoComment")
     @ApiOperation("发布评论")
     @SaCheckLogin
+    @RecordUserMessage(messageType = MessageTypeEnum.COMMENT)
     public BaseResponse<VideoComment> postVideoComment(@RequestBody VideoCommentPostRequest videoCommentPostRequest) {
         if (videoCommentPostRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -92,7 +89,6 @@ public class VideoCommentController {
 
     @GetMapping("/loadVideoComment")
     @ApiOperation("加载评论")
-    @SaCheckLogin
     public BaseResponse<VideoCommentResultVo> loadVideoComment(@NotEmpty String videoId,
                                                                Integer orderType) {
         VideoInfo videoInfo = videoInfoService.getById(videoId);
@@ -148,7 +144,7 @@ public class VideoCommentController {
     }
 
     @GetMapping("/cancelTopComment")
-    @ApiOperation("置顶评论")
+    @ApiOperation("取消置顶评论")
     @SaCheckLogin
     public BaseResponse<VideoCommentResultVo> cancelTopComment(@NotNull Integer commentId){
         UserInfo loginUser = userInfoService.getLoginUser();
@@ -161,7 +157,7 @@ public class VideoCommentController {
     @SaCheckLogin
     public BaseResponse<Boolean> deleteComment(@NotNull Integer commentId){
         UserInfo loginUser = userInfoService.getLoginUser();
-        videoCommentService.deleteComment(loginUser.getUserId(),commentId);
+        videoCommentService.deleteComment(loginUser,commentId);
         return ResultUtils.success(true);
     }
 

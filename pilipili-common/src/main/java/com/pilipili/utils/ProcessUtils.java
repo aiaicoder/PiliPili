@@ -2,8 +2,6 @@ package com.pilipili.utils;
 
 import com.pilipili.common.ErrorCode;
 import com.pilipili.exception.BusinessException;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 

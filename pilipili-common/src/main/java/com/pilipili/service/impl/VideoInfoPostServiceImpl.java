@@ -33,6 +33,7 @@ import com.pilipili.utils.RedisUtils;
 import com.pilipili.utils.SysSettingUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +75,7 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
     private VideoInfoFileService videoInfoFileService;
 
     @Resource
+    @Lazy
     private VideoInfoService videoInfoService;
 
 
@@ -326,8 +328,6 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
                 .eq(VideoInfo::getVideoId, bean.getVideoId())
                 .set(VideoInfo::getInteraction, bean.getInteraction()));
     }
-
-
 
 
     /**

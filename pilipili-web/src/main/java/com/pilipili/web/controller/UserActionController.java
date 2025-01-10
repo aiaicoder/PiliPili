@@ -5,17 +5,16 @@ import cn.hutool.core.bean.BeanUtil;
 import com.pilipili.Model.dto.user.UserActionRequest;
 import com.pilipili.Model.entity.UserAction;
 import com.pilipili.Model.entity.UserInfo;
+import com.pilipili.annotation.RecordUserMessage;
 import com.pilipili.common.BaseResponse;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.common.ResultUtils;
+import com.pilipili.enums.MessageTypeEnum;
 import com.pilipili.exception.BusinessException;
 import com.pilipili.service.UserActionService;
 import com.pilipili.service.UserInfoService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -36,7 +35,8 @@ public class UserActionController {
     @PostMapping("/doAction")
     @ApiOperation(value = "用户行为")
     @SaCheckLogin
-    public BaseResponse<Boolean> doAction(UserActionRequest userActionRequest) {
+    @RecordUserMessage(messageType = MessageTypeEnum.LIKE)
+    public BaseResponse<Boolean> doAction(@RequestBody UserActionRequest userActionRequest) {
         UserInfo loginUser = userInfoService.getLoginUser();
         if (userActionRequest == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -52,6 +52,6 @@ public class UserActionController {
         UserAction userAction = BeanUtil.copyProperties(userActionRequest, UserAction.class);
         userAction.setUserId(loginUser.getUserId());
         userActionService.saveAction(userAction);
-        return ResultUtils.success(true);
+        return ResultUtils.success(null);
     }
 }

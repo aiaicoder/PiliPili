@@ -70,6 +70,17 @@
     </select>
 
 
+    <select id="load24HoursHotVideo" resultType="com.pilipili.Model.Vo.VideoInfoVo">
+        SELECT
+        <include refid="Base_Column_List"/>
+        u.nickName
+        FROM VideoInfo v
+        LEFT JOIN userInfo u ON v.userId = u.userId
+        where v.lastPlayTime >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+        order by v.playCount DESC
+    </select>
+
+
     <insert id="insertOrUpdate" parameterType="com.pilipili.Model.entity.VideoInfo">
         INSERT INTO VideoInfo (
             videoId, videoCover, videoName, userId, createTime, lastUpdateTime,
