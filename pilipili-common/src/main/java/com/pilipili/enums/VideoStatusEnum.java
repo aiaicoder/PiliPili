@@ -1,4 +1,4 @@
-package com.pilipili.Model.enums;
+package com.pilipili.enums;
 
 /**
  * @author 15712

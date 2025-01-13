@@ -2,7 +2,6 @@ package com.pilipili.enums;
 
 /**
  * 消息类型枚举
- * @author 15712
  */
 public enum MessageTypeEnum {
     

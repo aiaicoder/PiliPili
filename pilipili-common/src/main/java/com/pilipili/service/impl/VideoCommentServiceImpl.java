@@ -144,8 +144,8 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
     }
 
     @Override
-    public Page<VideoComment> getVideoCommentList(Page<VideoComment> commentPage, String videoId) {
-        return videoCommentMapper.getVideoCommentList(commentPage,videoId);
+    public Page<VideoComment> getVideoCommentList(Page<VideoComment> commentPage, CommentQuery commentQuery) {
+        return videoCommentMapper.getVideoCommentList(commentPage,commentQuery);
     }
 
 

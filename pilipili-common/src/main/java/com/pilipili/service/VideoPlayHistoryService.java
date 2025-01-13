@@ -1,7 +1,9 @@
 package com.pilipili.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pilipili.Model.entity.VideoPlayHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pilipili.common.PageRequest;
 
 /**
 * @author 15712
@@ -10,4 +12,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface VideoPlayHistoryService extends IService<VideoPlayHistory> {
 
+    void savePlayHistory(String videoId, String userId, Integer fileIndex);
+
+    Page<VideoPlayHistory> getVideoPlayHistoryList(String userId, PageRequest pageRequest);
+
+    void deleteVideoPlayHistory(String userId, String videoId);
 }

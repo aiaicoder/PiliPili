@@ -10,7 +10,7 @@ import com.pilipili.Model.Vo.VideoPlayInfoVo;
 import com.pilipili.Model.dto.File.UploadFileDto;
 import com.pilipili.Model.entity.CategoryInfo;
 import com.pilipili.Model.entity.VideoInfoFilePost;
-import com.pilipili.Model.enums.DateTimePatternEnum;
+import com.pilipili.enums.DateTimePatternEnum;
 import com.pilipili.config.AppConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.pilipili.Constant.RedisKeyConstant.*;
 
@@ -283,7 +284,6 @@ public class RedisUtils {
         stringRedisTemplate.expire(userPlayOnlineKey, REDIS_FILE_EXPIRE_ONE_SECOND * 8, TimeUnit.SECONDS);
         stringRedisTemplate.expire(playOnlineKey, REDIS_FILE_EXPIRE_ONE_SECOND * 10, TimeUnit.SECONDS);
         return Integer.valueOf(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(playOnlineKey)));
-
     }
 
     /**
@@ -340,5 +340,30 @@ public class RedisUtils {
         String date = DateUtil.format(new Date(), DateTimePatternEnum.YYYYMMDD.getPattern());
         stringRedisTemplate.opsForValue().increment(REDIS_KEY_VIDEO_PLAY_COUNT + videoId, 1);
         stringRedisTemplate.expire(REDIS_KEY_VIDEO_PLAY_COUNT + date + ":" + videoId, REDIS_FILE_EXPIRE_ONE_DAY, TimeUnit.SECONDS);
+    }
+
+    public Map<String, Integer> getVideoPlayCount(String date) {
+        String keyPrefix = REDIS_KEY_VIDEO_PLAY_COUNT + date;
+        Map<String, String> batch = getBatch(keyPrefix);
+        return batch.entrySet().stream().collect(
+                Collectors.toMap(
+                        entry -> entry.getKey().substring(entry.getKey().lastIndexOf(":") + 1),
+                        entry -> Integer.valueOf(entry.getValue())
+                )
+        );
+    }
+
+
+    private Map<String, String> getBatch(String keyPrefix) {
+        String keys = keyPrefix + "*";
+        Set<String> keysSet = stringRedisTemplate.keys(keys);
+        if (keysSet == null || keysSet.isEmpty()) {
+            return new HashMap<>();
+        }
+        List<String> keysList = new ArrayList<>(keysSet);
+        List<String> keyValueList = stringRedisTemplate.opsForValue().multiGet(keysList);
+        return keysList.stream().collect(
+                Collectors.toMap(key -> key, value -> keyValueList.get(keysList.indexOf(value)))
+        );
     }
 }

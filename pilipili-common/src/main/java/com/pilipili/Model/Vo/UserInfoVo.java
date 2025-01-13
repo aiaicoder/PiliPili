@@ -90,6 +90,12 @@ public class UserInfoVo implements Serializable {
     private String grade;
 
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date joinTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date lastLoginTime;
+
 
     /**
      * 当前金币数量

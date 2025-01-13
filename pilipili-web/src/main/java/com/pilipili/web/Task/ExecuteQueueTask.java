@@ -6,6 +6,7 @@ import com.pilipili.component.EsSearchComponent;
 import com.pilipili.enums.UserActionTypeEnum;
 import com.pilipili.service.VideoInfoPostService;
 import com.pilipili.service.VideoInfoService;
+import com.pilipili.service.VideoPlayHistoryService;
 import com.pilipili.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,9 @@ public class ExecuteQueueTask {
 
     @Resource
     private VideoInfoService videoInfoService;
+
+    @Resource
+    private VideoPlayHistoryService videoPlayHistoryService;
 
 
     @Resource
@@ -76,7 +80,10 @@ public class ExecuteQueueTask {
                     //更新播放数
                     videoInfoService.addReadCount(videoPlayInfoVo.getVideoId());
                     if (StringUtils.isNotEmpty(videoPlayInfoVo.getUserId())) {
-                        //todo 记录播放历史
+                        videoPlayHistoryService.savePlayHistory(
+                                videoPlayInfoVo.getVideoId(),
+                                videoPlayInfoVo.getUserId(),
+                                videoPlayInfoVo.getFileIndex());
                     }
                     //记录当日的播放数量
                     redisUtils.recordVideoPlayCount(videoPlayInfoVo.getVideoId());

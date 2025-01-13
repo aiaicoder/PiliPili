@@ -228,34 +228,13 @@ public class UserController {
         return ResultUtils.success(loginUserVo);
     }
 
-    /**
-     * 分页获取用户封装列表
-     *
-     * @param userQueryRequest
-     * @return
-     */
-    @PostMapping("/list/page/vo")
-    public BaseResponse<Page<UserInfoVo>> listUserVoByPage(@RequestBody UserQueryRequest userQueryRequest) {
-        if (userQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        long current = userQueryRequest.getCurrent();
-        long size = userQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<UserInfo> userPage = userService.page(new Page<>(current, size),
-                userService.getQueryWrapper(userQueryRequest));
-        Page<UserInfoVo> userVoPage = new Page<>(current, size, userPage.getTotal());
-        List<UserInfoVo> userVo = userService.getUserVoList(userPage.getRecords());
-        userVoPage.setRecords(userVo);
-        return ResultUtils.success(userVoPage);
-    }
 
 
-    @GetMapping("/getSysSetting")
-    public BaseResponse<SysSettingDTO> getSysSetting() {
-        SysSettingDTO sysSettingDTO = sysSettingUtil.getSysSetting();
-        return ResultUtils.success(sysSettingDTO);
+
+    @GetMapping("/getUserCountInfo")
+    public BaseResponse<UserCountInfoDto> getUserCountInfo(@RequestParam("userId") String userId) {
+        return ResultUtils.success(userService.getUserCountInfo(userId));
     }
+
 
 }

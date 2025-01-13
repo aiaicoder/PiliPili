@@ -34,6 +34,9 @@ public class UserFocusServiceImpl extends ServiceImpl<UserFocusMapper, UserFocus
     @Lazy
     private UserInfoService userInfoService;
 
+    @Resource
+    private UserFocusMapper userFocusMapper;
+
     @Override
     public void focusUser(String userId, String focusUserId) {
         if (userId.equals(focusUserId)){
@@ -58,6 +61,8 @@ public class UserFocusServiceImpl extends ServiceImpl<UserFocusMapper, UserFocus
                 eq(UserFocus::getUserId, userId)
                 .eq(UserFocus::getFocusUserId, focusUserId));
     }
+
+
 }
 
 

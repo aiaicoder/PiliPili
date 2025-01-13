@@ -1,13 +1,19 @@
 package com.pilipili.service.impl;
 
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pilipili.Model.dto.Comment.UserMessageExtendDto;
+import com.pilipili.Model.dto.UserMessage.UserMessageCountDto;
 import com.pilipili.Model.entity.UserMessage;
 import com.pilipili.Model.entity.VideoComment;
 import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.Model.entity.VideoInfoPost;
+import com.pilipili.common.PageRequest;
+import com.pilipili.enums.MessageReadTypeEnum;
 import com.pilipili.enums.MessageTypeEnum;
 import com.pilipili.mapper.UserMessageMapper;
 import com.pilipili.service.UserMessageService;
@@ -17,6 +23,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author 15712
@@ -35,6 +44,9 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
 
     @Resource
     private VideoInfoPostService videoInfoPostService;
+
+    @Resource
+    private UserMessageMapper userMessageMapper;
 
     @Override
     public void saveMessage(String videoId, String sendUserId, MessageTypeEnum messageTypeEnum, String content, Integer replayCommentId) {
@@ -67,7 +79,7 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
             return;
         }
         //系统消息特殊处理
-        if(MessageTypeEnum.SYS.getType().equals(messageTypeEnum.getType())){
+        if (MessageTypeEnum.SYS.getType().equals(messageTypeEnum.getType())) {
             VideoInfoPost videoInfoPost = videoInfoPostService.getById(videoId);
             extendDto.setAuditStatus(videoInfoPost.getStatus());
         }
@@ -77,6 +89,55 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
 
 
     }
+
+    @Override
+    public List<UserMessageCountDto> getNoReadMessageType(String userId) {
+        LambdaQueryWrapper<UserMessage> wrapper = Wrappers.<UserMessage>lambdaQuery()
+                .eq(UserMessage::getUserId, userId)
+                .eq(UserMessage::getReadType, MessageReadTypeEnum.NO_READ.getType());
+
+        List<UserMessage> userMessages = this.list(wrapper);
+
+        // 使用groupingBy按照messageType分组，counting()计算每组的数量
+        Map<Integer, Long> messageTypeCountMap = userMessages.stream()
+                .collect(Collectors.groupingBy(
+                        UserMessage::getMessageType,
+                        Collectors.counting()
+                ));
+
+        // 将Map转换为所需的DTO列表
+        return messageTypeCountMap.entrySet().stream()
+                .map(entry -> {
+                    UserMessageCountDto dto = new UserMessageCountDto();
+                    dto.setMessageType(entry.getKey());
+                    dto.setCount(entry.getValue().intValue());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void readAll(String userId, Integer messageType) {
+        LambdaUpdateWrapper<UserMessage> updateWrapper = Wrappers.lambdaUpdate(UserMessage.class).eq(UserMessage::getUserId, userId)
+                .eq(UserMessage::getMessageType, messageType)
+                .set(UserMessage::getReadType, MessageReadTypeEnum.READ.getType());
+        this.update(updateWrapper);
+    }
+
+    @Override
+    public void delMessage(String userId, Integer messageId, Integer messageType) {
+        LambdaQueryWrapper<UserMessage> lambdaQueryWrapper = Wrappers.lambdaQuery(UserMessage.class).eq(UserMessage::getUserId, userId)
+                .eq(UserMessage::getMessageType, messageType)
+                .eq(UserMessage::getMessageId, messageId);
+        this.remove(lambdaQueryWrapper);
+    }
+
+    @Override
+    public Page<UserMessage> loadMessageByType(String userId, Integer messageType, PageRequest pageRequest) {
+        Page<UserMessage> page = new Page<>(pageRequest.getCurrent(), pageRequest.getPageSize());
+        return userMessageMapper.loadMessageByType(page, userId, messageType);
+    }
+
 }
 
 

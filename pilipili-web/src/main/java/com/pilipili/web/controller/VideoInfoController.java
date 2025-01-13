@@ -139,7 +139,6 @@ public class VideoInfoController {
     @GetMapping("/recommend")
     @ApiOperation("获取推荐视频")
     public BaseResponse<List<VideoInfoVo>> getVideoRecommend(@NotEmpty String keyword, @NotEmpty String videoId) {
-
         List<VideoInfoVo> videoInfoVoList = esSearchComponent.searchDoc(false, keyword, SearchOrderTypeEnum.VIDEO_PLAY.getType(), 1, 20).getRecords();
         return ResultUtils.success(videoInfoVoList.stream().filter(videoInfoVo -> !videoInfoVo.getVideoId().equals(videoId)).collect(Collectors.toList()));
     }

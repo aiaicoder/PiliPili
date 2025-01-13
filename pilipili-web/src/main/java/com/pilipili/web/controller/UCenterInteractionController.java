@@ -3,6 +3,7 @@ package com.pilipili.web.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pilipili.Model.dto.Comment.CommentQuery;
 import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoComment;
 import com.pilipili.Model.entity.VideoDanMu;
@@ -68,7 +69,9 @@ public class UCenterInteractionController {
     @ApiOperation("获取视频用户评论信息")
     @SaCheckLogin
     public BaseResponse<Page<VideoComment>> loadComment(@NotEmpty String videoId, PageRequest pageRequest) {
-        Page<VideoComment> page = videoCommentService.getVideoCommentList(new Page<>(pageRequest.getCurrent(), pageRequest.getPageSize()), videoId);
+        CommentQuery commentQuery = new CommentQuery();
+        commentQuery.setVideoId(videoId);
+        Page<VideoComment> page = videoCommentService.getVideoCommentList(new Page<>(pageRequest.getCurrent(), pageRequest.getPageSize()), commentQuery);
         return ResultUtils.success(page);
     }
 

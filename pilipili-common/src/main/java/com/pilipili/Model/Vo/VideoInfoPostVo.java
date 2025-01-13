@@ -2,7 +2,8 @@ package com.pilipili.Model.Vo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pilipili.Model.enums.VideoStatusEnum;
+
+import com.pilipili.enums.VideoStatusEnum;
 import lombok.Data;
 
 import java.io.Serializable;

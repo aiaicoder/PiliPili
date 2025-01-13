@@ -8,21 +8,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Model.dto.File.UploadFileDto;
-import com.pilipili.Model.entity.*;
-import com.pilipili.Model.enums.VideoFileTransferResultEnum;
-import com.pilipili.Model.enums.VideoFileUpdateTypeEnum;
-import com.pilipili.Model.enums.VideoStatusEnum;
+import com.pilipili.Model.entity.VideoInfo;
+import com.pilipili.Model.entity.VideoInfoFile;
+import com.pilipili.Model.entity.VideoInfoFilePost;
+import com.pilipili.Model.entity.VideoInfoPost;
+import com.pilipili.enums.VideoFileTransferResultEnum;
+import com.pilipili.enums.VideoFileUpdateTypeEnum;
+
 import com.pilipili.common.ErrorCode;
 import com.pilipili.config.AppConfig;
+import com.pilipili.enums.VideoStatusEnum;
 import com.pilipili.exception.BusinessException;
-import com.pilipili.mapper.VideoDanMuMapper;
-import com.pilipili.mapper.VideoInfoFilePostMapper;
-import com.pilipili.mapper.VideoInfoMapper;
-import com.pilipili.mapper.VideoInfoPostMapper;
+import com.pilipili.mapper.*;
 import com.pilipili.service.VideoInfoFilePostService;
 import com.pilipili.service.VideoInfoFileService;
 import com.pilipili.service.VideoInfoPostService;
@@ -66,6 +66,9 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
 
     @Resource
     private VideoDanMuMapper videoDanMuMapper;
+
+    @Resource
+    private UserInfoMapper userInfoMapper;
 
     @Resource
     private VideoInfoMapper videoInfoMapper;
@@ -280,7 +283,8 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
         VideoInfo dbInfo = videoInfoService.getById(videoId);
         if (dbInfo == null){
             SysSettingDTO sysSettingDTO = sysSettingUtil.getSysSetting();
-            //todo 如果是新视频就加硬币
+            //如果是新视频就加硬币
+            userInfoMapper.updateCountInfo(infoPost.getUserId(), sysSettingDTO.getPostVideoCoinCount());
         }
         VideoInfo  videoInfo = BeanUtil.copyProperties(infoPost, VideoInfo.class);
         //更新发布信息到正式表
@@ -328,6 +332,8 @@ public class VideoInfoPostServiceImpl extends ServiceImpl<VideoInfoPostMapper, V
                 .eq(VideoInfo::getVideoId, bean.getVideoId())
                 .set(VideoInfo::getInteraction, bean.getInteraction()));
     }
+
+
 
 
     /**

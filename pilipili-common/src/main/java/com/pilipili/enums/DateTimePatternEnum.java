@@ -1,4 +1,4 @@
-package com.pilipili.Model.enums;
+package com.pilipili.enums;
 
 /**
  * @author <a href="https://github.com/aiaicoder">  小新
@@ -7,7 +7,7 @@ package com.pilipili.Model.enums;
  */
 public enum DateTimePatternEnum {
     YYYY_MM_DD_HH_MM_SS("yyyy-MM-dd HH:mm:ss"),
-    YYYYMMDD("yyyyMMdd"),
+    YYYYMMDD("yyyy-MM-dd"),
     _YYYYMMDD("yyyy/MM/dd"),
     YYYYMM("yyyyMM");
     private String pattern;

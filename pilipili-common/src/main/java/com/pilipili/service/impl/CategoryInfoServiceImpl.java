@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pilipili.Model.dto.Category.CategoryQueryRequest;
 import com.pilipili.Model.entity.CategoryInfo;
-import com.pilipili.mapper.CategoryInfoMapper;
-import com.pilipili.service.CategoryInfoService;
+import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.exception.BusinessException;
+import com.pilipili.mapper.CategoryInfoMapper;
+import com.pilipili.service.CategoryInfoService;
+import com.pilipili.service.VideoInfoService;
 import com.pilipili.utils.RedisUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,9 @@ import java.util.List;
 public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, CategoryInfo> implements CategoryInfoService {
     @Resource
     private CategoryInfoMapper categoryInfoMapper;
+
+    @Resource
+    private VideoInfoService videoInfoService;
 
 
     @Resource
@@ -61,7 +66,12 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
 
     @Override
     public Boolean deleteCategory(Integer categoryIdOrPid) {
-        //todo 检查该分类是否够视频，有视频不能删除
+        //检查该分类是否够视频，有视频不能删除
+        LambdaQueryWrapper<VideoInfo> lambdaQueryWrapper = Wrappers.lambdaQuery(VideoInfo.class).eq(VideoInfo::getCategoryId, categoryIdOrPid).
+                or().eq(VideoInfo::getPCategoryId, categoryIdOrPid);
+        if (videoInfoService.count(lambdaQueryWrapper) > 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "该分类下有视频，不能删除");
+        }
         LambdaQueryWrapper<CategoryInfo> queryWrapper = Wrappers.lambdaQuery(CategoryInfo.class);
         queryWrapper.eq(CategoryInfo::getCategoryId, categoryIdOrPid).or().eq(CategoryInfo::getPCategoryId, categoryIdOrPid);
         save2Redis();

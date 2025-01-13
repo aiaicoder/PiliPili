@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoInfo;
 import com.pilipili.Model.entity.VideoInfoFilePost;
+import com.pilipili.Model.entity.VideoInfoPost;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.component.EsSearchComponent;
 import com.pilipili.config.AppConfig;
 import com.pilipili.enums.UserActionTypeEnum;
 import com.pilipili.enums.UserRoleEnum;
+import com.pilipili.enums.VideoRecommendTypeEnum;
 import com.pilipili.exception.BusinessException;
+import com.pilipili.mapper.UserInfoMapper;
 import com.pilipili.mapper.VideoInfoMapper;
 import com.pilipili.service.*;
 import com.pilipili.system.SysSettingDTO;
@@ -68,9 +71,12 @@ public class VideoInfoServiceImpl extends ServiceImpl<VideoInfoMapper, VideoInfo
     @Resource
     private EsSearchComponent esSearchComponent;
 
+    @Resource
+    private UserInfoMapper userInfoMapper;
+
     @Override
     public void deleteVideo(UserInfo loginUser, String videoId) {
-        VideoInfo dbInfo = getById(videoId);
+        VideoInfoPost dbInfo = videoInfoPostService.getById(videoId);
         if (dbInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
@@ -81,8 +87,8 @@ public class VideoInfoServiceImpl extends ServiceImpl<VideoInfoMapper, VideoInfo
         removeById(videoId);
         videoInfoPostService.removeById(videoId);
         SysSettingDTO sysSetting = sysSettingUtil.getSysSetting();
-        //todo 删除用户硬币
-
+        //删除用户硬币
+        userInfoMapper.updateCountInfo(loginUser.getUserId(), -sysSetting.getPostVideoCoinCount());
         esSearchComponent.deleteDoc(videoId);
         executorService.execute(() -> {
             //删除视频分p文件
@@ -111,6 +117,22 @@ public class VideoInfoServiceImpl extends ServiceImpl<VideoInfoMapper, VideoInfo
     @Override
     public void addReadCount(String videoId) {
         videoInfoMapper.updateCountInfo(videoId, UserActionTypeEnum.VIDEO_PLAY.getField(), 1);
+    }
+
+    @Override
+    public void recommendVideo(String videoId) {
+        VideoInfo videoInfo = this.getById(videoId);
+        if (videoInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        Integer recommendType = null;
+        if (!VideoRecommendTypeEnum.RECOMMEND.getType().equals(videoInfo.getRecommendType())) {
+            recommendType = VideoRecommendTypeEnum.RECOMMEND.getType();
+        } else {
+            recommendType = VideoRecommendTypeEnum.NO_RECOMMEND.getType();
+        }
+        videoInfo.setRecommendType(recommendType);
+        this.updateById(videoInfo);
     }
 }
 

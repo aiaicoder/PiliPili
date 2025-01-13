@@ -15,4 +15,14 @@
         userId,videoId,fileIndex,
         lastUpdateTime
     </sql>
+    <select id="getVideoPlayHistoryList" resultType="com.pilipili.Model.entity.VideoPlayHistory">
+        select
+        <include refid="Base_Column_List"/>,
+            v.videoName,v.videoCover,v.videoDuration,u.nickName,
+            left join VideoInfo v on vh.videoId = v.videoId
+            left join userInfo u on v.userId = u.userId
+        from VideoPlayHistory vh
+        where userId = #{userId}
+        order by vh.lastUpdateTime desc
+    </select>
 </mapper>

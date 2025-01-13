@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pilipili.Model.Vo.VideoInfoPostVo;
 import com.pilipili.Model.Vo.VideoInfoVo;
+import com.pilipili.Model.dto.user.CountInfoDto;
 import com.pilipili.Model.dto.video.VideoInfoQueryRequest;
 import com.pilipili.Model.entity.VideoInfo;
 import org.apache.ibatis.annotations.Param;
@@ -29,6 +30,8 @@ public interface VideoInfoMapper extends BaseMapper<VideoInfo> {
     void updateCountInfo( @Param("videoId") String videoId,  @Param("field") String field, @Param("changeCount") Integer changeCount);
 
     Page<VideoInfoVo> load24HoursHotVideo(Page<VideoInfoVo> page);
+
+    CountInfoDto getUserCountInfo(@Param("userId") String userId);
 }
 
 

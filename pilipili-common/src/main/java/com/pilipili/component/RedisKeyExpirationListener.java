@@ -35,6 +35,5 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
         int userIndex = key.indexOf(RedisKeyConstant.REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX) + RedisKeyConstant.REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX.length();
         String fileId = key.substring(userIndex, userIndex + CommonConstant.RANDOM_STRING_LENGTH20);
         redisUtils.decrement(String.format(RedisKeyConstant.REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE, fileId));
-
     }
 }

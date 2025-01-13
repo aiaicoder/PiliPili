@@ -10,7 +10,7 @@ import com.pilipili.Model.dto.File.UploadFileDto;
 import com.pilipili.Model.dto.video.VideoUpLoadRequest;
 import com.pilipili.Model.entity.UserInfo;
 import com.pilipili.Model.entity.VideoInfoFile;
-import com.pilipili.Model.enums.DateTimePatternEnum;
+import com.pilipili.enums.DateTimePatternEnum;
 import com.pilipili.common.BaseResponse;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.common.ResultUtils;

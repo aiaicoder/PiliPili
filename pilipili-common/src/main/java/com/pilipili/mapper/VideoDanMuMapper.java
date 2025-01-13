@@ -13,7 +13,11 @@ import org.apache.ibatis.annotations.Param;
 */
 public interface VideoDanMuMapper extends BaseMapper<VideoDanMu> {
 
-    Page<VideoDanMu> getDanMuList(Page<VideoDanMu> danMuPage, @Param("videoId") String videoId, @Param("userId") String userId);
+    Page<VideoDanMu> getDanMuList(Page<VideoDanMu> danMuPage,
+                                  @Param("videoId") String videoId,
+                                  @Param("userId") String userId,
+                                  @Param("VideoName") String videoNameFuzzy
+    );
 }
 
 

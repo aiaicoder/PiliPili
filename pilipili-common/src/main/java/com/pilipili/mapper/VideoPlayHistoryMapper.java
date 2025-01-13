@@ -1,7 +1,9 @@
 package com.pilipili.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pilipili.Model.entity.VideoPlayHistory;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 15712
@@ -11,6 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface VideoPlayHistoryMapper extends BaseMapper<VideoPlayHistory> {
 
+    Page<VideoPlayHistory> getVideoPlayHistoryList(Page<VideoPlayHistory> page, @Param("userId") String userId);
 }
 
 

@@ -1,14 +1,13 @@
-package com.pilipili.Model.enums;
+package com.pilipili.enums;
 
-public enum VideoFileTransferResultEnum {
-    TRANSFER( 0, "转码中"),
-    SUCCESS(1,"转码成功"),
-    FAIL(2, "转码失败");
-
+public enum VideoFileUpdateTypeEnum {
+    NO_UPDATE( 0, "无更新"),
+    UPDATE(1,"有更新");
+    
     private Integer status;
     private String desc;
 
-    VideoFileTransferResultEnum(Integer status, String desc) {
+    VideoFileUpdateTypeEnum(Integer status, String desc) {
         this.status = status;
         this.desc = desc;
     }

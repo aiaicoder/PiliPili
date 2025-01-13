@@ -1,12 +1,16 @@
 package com.pilipili.admin.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pilipili.Constant.CommonConstant;
+import com.pilipili.Constant.UserConstant;
 import com.pilipili.Model.Vo.VideoInfoPostVo;
 import com.pilipili.Model.dto.video.VideoInfoAuditRequest;
 import com.pilipili.Model.dto.video.VideoInfoPostListRequest;
 import com.pilipili.Model.entity.UserInfo;
+import com.pilipili.Model.entity.VideoInfoFilePost;
 import com.pilipili.annotation.RecordUserMessage;
 import com.pilipili.common.BaseResponse;
 import com.pilipili.common.ErrorCode;
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * @author <a href="https://github.com/aiaicoder">  小新
@@ -53,6 +59,7 @@ public class VideoInfoController {
     @GetMapping("/getVideoInfoPostList")
     @ApiOperation("获取视频列表")
     @SaCheckLogin
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<VideoInfoPostVo>> getVideoInfoPostList(VideoInfoPostListRequest videoInfoPostListRequest) {
         if (videoInfoPostListRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -68,6 +75,7 @@ public class VideoInfoController {
     @PostMapping("/auditVideo")
     @ApiOperation("审核视频")
     @SaCheckLogin
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     @RecordUserMessage(messageType = MessageTypeEnum.SYS)
     public BaseResponse<Boolean> auditVideo(VideoInfoAuditRequest videoInfoAuditRequest) {
         if (videoInfoAuditRequest == null) {
@@ -76,10 +84,43 @@ public class VideoInfoController {
         String videoId = videoInfoAuditRequest.getVideoId();
         Integer status = videoInfoAuditRequest.getStatus();
         String reason = videoInfoAuditRequest.getReason();
-        if (videoId == null || status == null){
+        if (videoId == null || status == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         videoInfoPostService.auditVideo(videoId, status, reason);
         return ResultUtils.success(null);
     }
+
+
+    @PostMapping("/recommendVideo")
+    @ApiOperation("推荐视频")
+    @SaCheckLogin
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    @RecordUserMessage(messageType = MessageTypeEnum.SYS)
+    public BaseResponse<Boolean> recommendVideo(@NotEmpty String videoId) {
+        videoInfoService.recommendVideo(videoId);
+        return ResultUtils.success(null);
+    }
+
+    @PostMapping("/deleteVideo")
+    @ApiOperation("删除视频")
+    @SaCheckLogin
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    @RecordUserMessage(messageType = MessageTypeEnum.SYS)
+    public BaseResponse<Boolean> deleteVideo(@NotEmpty String videoId) {
+        UserInfo loginUser = userInfoService.getLoginUser();
+        videoInfoService.deleteVideo(loginUser, videoId);
+        return ResultUtils.success(null);
+    }
+
+    @GetMapping("/loadVideoInfoFile")
+    @ApiOperation("展示分批视频")
+    @SaCheckLogin
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    @RecordUserMessage(messageType = MessageTypeEnum.SYS)
+    public BaseResponse<List<VideoInfoFilePost>> loadVideoInfoFile(@NotEmpty String videoId) {
+        return ResultUtils.success(videoInfoFilePostService.list(Wrappers.lambdaQuery(VideoInfoFilePost.class).eq(VideoInfoFilePost::getVideoId, videoId).orderByAsc(VideoInfoFilePost::getFileIndex)));
+    }
+
+
 }

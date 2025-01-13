@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * 评论
+ * @author 15712
  * @TableName VideoComment
  */
 @TableName(value ="VideoComment")

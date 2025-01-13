@@ -72,12 +72,22 @@
 
     <select id="load24HoursHotVideo" resultType="com.pilipili.Model.Vo.VideoInfoVo">
         SELECT
-        <include refid="Base_Column_List"/>
-        u.nickName
+        <include refid="Base_Column_List"/>,
+        u.nickName,
+        u.userAvatar
         FROM VideoInfo v
         LEFT JOIN userInfo u ON v.userId = u.userId
         where v.lastPlayTime >= DATE_SUB(NOW(), INTERVAL 1 DAY)
         order by v.playCount DESC
+    </select>
+
+
+
+    <select id="getUserCountInfo" resultType="com.pilipili.Model.dto.user.CountInfoDto">
+        select ifnull(sum(v.playCount), 0) as playCount,
+               ifnull(sum(v.likeCount), 0) as likeCount
+        from VideoInfo v
+        where v.userId = #{userId}
     </select>
 
 

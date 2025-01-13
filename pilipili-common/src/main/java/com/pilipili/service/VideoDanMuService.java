@@ -16,5 +16,7 @@ public interface VideoDanMuService extends IService<VideoDanMu> {
 
     Page<VideoDanMu> getDanMuList(Page<VideoDanMu> objectPage, String videoId, String userId);
 
+    Page<VideoDanMu> getDanMuListByFuzzy(Page<VideoDanMu> danMuPage, String videoNameFuzzy);
+
     void deleteDanMu(Integer danMuId, UserInfo loginUser);
 }

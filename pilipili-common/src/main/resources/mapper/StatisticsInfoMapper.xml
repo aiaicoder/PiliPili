@@ -5,14 +5,103 @@
 <mapper namespace="com.pilipili.mapper.StatisticsInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.pilipili.Model.entity.StatisticsInfo">
-            <id property="statisticsDate" column="statisticsDate" jdbcType="VARCHAR"/>
-            <id property="userId" column="userId" jdbcType="VARCHAR"/>
-            <id property="dataType" column="dataType" jdbcType="TINYINT"/>
-            <result property="statisticsCount" column="statisticsCount" jdbcType="INTEGER"/>
+        <id property="statisticsDate" column="statisticsDate" jdbcType="VARCHAR"/>
+        <id property="userId" column="userId" jdbcType="VARCHAR"/>
+        <id property="dataType" column="dataType" jdbcType="TINYINT"/>
+        <result property="statisticsCount" column="statisticsCount" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         statisticsDate,userId,dataType,
         statisticsCount
     </sql>
+
+    <select id="statisticUserFocus" resultType="com.pilipili.Model.entity.StatisticsInfo">
+        select focusUserId, count(userId) as statisticsCount
+        from UserFocus
+        where <![CDATA[DATE_FORMAT(focusTime, '%Y-%m-%d') = #{statisticDate}
+        ]]> group by focusUserId
+    </select>
+
+
+    <select id="statisticUserComment" resultType="com.pilipili.Model.entity.StatisticsInfo">
+        select videoUserId as userId, count(1) as statisticsCount
+        from VideoComment
+        where <![CDATA[DATE_FORMAT(postTime, '%Y-%m-%d') = #{statisticDate}
+        ]]> group by videoId
+    </select>
+
+
+    <select id="selectStatisticInfo" resultType="com.pilipili.Model.entity.StatisticsInfo">
+        select videoUserId as userId,actionType as dataType, IFNULL(sum(actionCount),0) statisticsCount
+        from UserAction
+        where <![CDATA[DATE_FORMAT(actionTime, '%Y-%m-%d') = #{statisticDate}]]> and actionType in
+        <foreach
+                collection="actionTypeArray" item="actionType" open="(" separator="," close=")">#{actionType}
+        </foreach>
+        group by videoUserId, actionType
+    </select>
+
+
+    <select id="getActualTimeStatisticsInfo" resultType="java.util.Map">
+        select sum(IFNULL(playCount, 0)) as playCount,
+        sum(IFNULL(likeCount, 0)) as likeCount,
+        sum(IFNULL(collectCount, 0)) as collectCount,
+        sum(IFNULL(coinCount, 0)) as coinCount,
+        sum(IFNULL(danmuCount, 0)) as danmuCount,
+        sum(IFNULL(commentCount, 0)) as commentCount
+        from VideoInfo
+        <where>
+            <if test="userId != null and userId != ''">
+                userId = #{userId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectListTotalInfo" resultType="com.pilipili.Model.entity.StatisticsInfo">
+        select IFNULL(sum(statisticsCount),0) as statisticsCount,
+               dataType
+        from StatisticsInfo
+        where  <![CDATA[DATE_FORMAT(statisticsDate, '%Y-%m-%d') = #{statisticDate}]]>
+        group by dataType
+    </select>
+
+    <select id="selectListTotalInfoWeekly" resultType="com.pilipili.Model.entity.StatisticsInfo">
+        select IFNULL(sum(statisticsCount), 0) as statisticsCount,
+               dataType,
+               statisticsDate
+        from StatisticsInfo
+        where <![CDATA[  #{startDate} <= DATE_FORMAT(statisticsDate, '%Y-%m-%d') <= #{endDate}]]>
+          and dataType = #{dataType}
+        group by dataType, statisticsDate
+    </select>
+
+    <select id="selectTotalUserInfoWeekly" resultType="com.pilipili.Model.entity.StatisticsInfo">
+        select count(1)                          as statisticsCount,
+               DATE_FORMAT(JoinTime, '%Y-%m-%d') as statisticsDate
+        from userInfo
+        where <![CDATA[  #{startDate} <= DATE_FORMAT(JoinTime, '%Y-%m-%d') <= #{endDate}]]>
+        group by statisticsDate
+        order by statisticsDate
+    </select>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO StatisticsInfo (
+        statisticsDate,
+        userId,
+        dataType,
+        statisticsCount
+        ) VALUES
+        <foreach collection="statisticsInfos" item="item" separator=",">
+            (
+            #{item.userId},
+            #{item.statisticsDate},
+            #{item.dataType},
+            #{item.statisticsCount}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        statisticsCount = VALUES(statisticsCount)
+    </insert>
 </mapper>

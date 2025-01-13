@@ -3,6 +3,7 @@ package com.pilipili.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pilipili.Model.Vo.UserInfoVo;
+import com.pilipili.Model.dto.user.UserCountInfoDto;
 import com.pilipili.Model.dto.user.UserQueryRequest;
 import com.pilipili.Model.entity.UserInfo;
 
@@ -101,4 +102,7 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     QueryWrapper<UserInfo> getQueryWrapper(UserQueryRequest userQueryRequest);
 
+    UserCountInfoDto getUserCountInfo(String userId);
+
+    void changeUserStatus(String userId, Integer status);
 }

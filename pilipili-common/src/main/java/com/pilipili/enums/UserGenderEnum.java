@@ -1,4 +1,4 @@
-package com.pilipili.Model.enums;
+package com.pilipili.enums;
 
 /**
  * @author <a href="https://github.com/aiaicoder">  小新

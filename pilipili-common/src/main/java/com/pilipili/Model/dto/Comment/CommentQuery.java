@@ -20,4 +20,5 @@ public class CommentQuery extends PageRequest implements Serializable {
     private Integer pCommentId;
     private String orderBy;
     private Integer topType;
+    private String videoNameFuzzy;
 }

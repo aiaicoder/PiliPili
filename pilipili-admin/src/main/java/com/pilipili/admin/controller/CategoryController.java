@@ -1,6 +1,8 @@
 package com.pilipili.admin.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.hutool.core.bean.BeanUtil;
+import com.pilipili.Constant.UserConstant;
 import com.pilipili.Model.dto.Category.CategoryDeleteRequest;
 import com.pilipili.Model.dto.Category.CategoryQueryRequest;
 import com.pilipili.Model.dto.Category.CategorySaveRequest;
@@ -42,6 +44,7 @@ public class CategoryController {
 
     @PostMapping("/LoadCategory")
     @ApiOperation(value = "分类管理")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<List<CategoryInfo>> loadCategory(@RequestBody CategoryQueryRequest categoryQueryRequest, HttpServletRequest request) {
         List<CategoryInfo> categoryLists = categoryInfoService.getCategoryList(categoryQueryRequest);
         return ResultUtils.success(categoryLists);
@@ -50,6 +53,7 @@ public class CategoryController {
 
     @PostMapping("/addCategory")
     @ApiOperation(value = "添加分类")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> addOrUpdateCategory(@RequestBody CategorySaveRequest categorySaveRequest, HttpServletRequest request) {
         if (categorySaveRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -73,6 +77,7 @@ public class CategoryController {
      */
     @PostMapping("/deleteCategory")
     @ApiOperation(value = "删除分类")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteCategory(@RequestBody CategoryDeleteRequest categoryDeleteRequest, HttpServletRequest request) {
         if (categoryDeleteRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -88,6 +93,7 @@ public class CategoryController {
 
     @GetMapping
     @ApiOperation(value = "重新排序")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> reorderCategory(Integer pCategoryId,String categoryIds) {
         Boolean result = categoryInfoService.reorderCategory(pCategoryId,categoryIds);
         return ResultUtils.success(result);

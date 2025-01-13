@@ -20,4 +20,21 @@
         messageType,sendUserId,readType,
         createTime,extendJson
     </sql>
+
+
+    <select id="loadMessageByType" resultType="com.pilipili.Model.entity.UserMessage">
+        select
+        <include refid="Base_Column_List"/>,
+        u.avatar as sendUserAvatar,
+        u.nickName as sendNickName,
+        v.videoName,
+        v.cover as videoCover
+        from UserMessage um
+        left join userInfo u on u.userId = um.sendUserId
+        left join VideoInfo v on v.videoId = um.videoId
+        where um.userId = #{userId}
+        and um.messageType = #{messageType}
+        order by um.createTime desc
+    </select>
+
 </mapper>

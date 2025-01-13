@@ -12,4 +12,5 @@ public interface UserFocusService extends IService<UserFocus> {
 
     void focusUser(String userId, String focusUserId);
     void cancelFocus(String userId, String focusUserId);
+
 }

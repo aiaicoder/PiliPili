@@ -54,7 +54,7 @@
             and VideoComment.topType = #{commentQuery.topType}
         </if>
         <if test="commentQuery.orderBy != null">
-            order by #{commentQuery.orderBy}
+            order by ${commentQuery.orderBy}
         </if>
     </select>
 
@@ -62,15 +62,31 @@
         select <include refid="Base_Column_List"/>
         from VideoComment
         where VideoComment.videoId = #{videoId}
-        order by #{commentQuery.orderBy}
+        order by ${commentQuery.orderBy}
     </select>
+
     <select id="getVideoCommentList" resultType="com.pilipili.Model.entity.VideoComment">
-        select<include refid="Base_Column_List"/>v2.videoCover,v2.videName,u.nikeName,u.userAvatar,u2.nickName as
-        replyNikeName,u2.userAvatar as replyUserAvatar
+        select <include refid="Base_Column_List"/>,
+               v2.videoCover,
+               v2.videoName,
+               u.nickName,
+               u.userAvatar,
+               u2.nickName as replyNickName,
+               u2.userAvatar as replyUserAvatar
         from VideoComment v
         inner join VideoInfo v2 on v.videoId = v2.videoId
         left join userInfo u2 on v.replyUserId = u2.userId
         left join userInfo u on v.userId = u.userId
-        where v.videoId = #{videoId}
+        <where>
+            <if test="commentQuery.videoId != null">
+                v.videoId = #{commentQuery.videoId}
+            </if>
+            <if test="commentQuery.videoNameFuzzy != null or commentQuery.videoNameFuzzy != ''">
+                and v2.videoName like concat('%',#{commentQuery.videoNameFuzzy},'%')
+            </if>
+        </where>
+        <if test="commentQuery.orderBy != null">
+            order by ${commentQuery.orderBy} desc
+        </if>
     </select>
 </mapper>

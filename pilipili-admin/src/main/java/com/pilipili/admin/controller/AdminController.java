@@ -65,6 +65,7 @@ public class AdminController {
 
     @GetMapping("/checkCode")
     @ApiOperation(value = "图片验证码")
+
     public BaseResponse<Map<String, String>> checkCode(HttpServletRequest request) {
         String ipAddress = NetUtils.getIpAddress(request);
         ipAddress = ipAddress.replaceAll(":", ".");

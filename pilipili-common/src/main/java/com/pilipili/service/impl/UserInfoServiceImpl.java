@@ -14,20 +14,23 @@ import com.pilipili.Constant.CommonConstant;
 import com.pilipili.Constant.RedisKeyConstant;
 import com.pilipili.Constant.RexConstant;
 import com.pilipili.Constant.UserConstant;
+import com.pilipili.Model.Vo.UserInfoVo;
+import com.pilipili.Model.dto.user.CountInfoDto;
+import com.pilipili.Model.dto.user.UserCountInfoDto;
+import com.pilipili.Model.dto.user.UserQueryRequest;
 import com.pilipili.Model.entity.UserFocus;
+import com.pilipili.Model.entity.UserInfo;
+import com.pilipili.enums.UserGenderEnum;
+import com.pilipili.enums.UserStatusEnum;
 import com.pilipili.common.ErrorCode;
 import com.pilipili.exception.BusinessException;
+import com.pilipili.mapper.UserInfoMapper;
+import com.pilipili.mapper.VideoInfoMapper;
 import com.pilipili.service.UserFocusService;
+import com.pilipili.service.UserInfoService;
 import com.pilipili.utils.RedisUtils;
 import com.pilipili.utils.SqlUtils;
 import com.pilipili.utils.StringUtil;
-import com.pilipili.Model.Vo.UserInfoVo;
-import com.pilipili.Model.dto.user.UserQueryRequest;
-import com.pilipili.Model.entity.UserInfo;
-import com.pilipili.Model.enums.UserGenderEnum;
-import com.pilipili.Model.enums.UserStatusEnum;
-import com.pilipili.mapper.UserInfoMapper;
-import com.pilipili.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -50,7 +53,7 @@ import static com.pilipili.Constant.UserConstant.*;
  * 用户服务实现
  *
  * @author <a href="https://github.com/liyupi">小新</a>
- * 
+ *
  */
 @Service
 @Slf4j
@@ -62,6 +65,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Resource
     UserFocusService userFocusService;
 
+    @Resource
+    private VideoInfoMapper videoInfoMapper;
+
 
     @Override
     public UserInfo getUserDetailInfo(String currentUserId, String userId) {
@@ -69,15 +75,19 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (userInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
+        CountInfoDto countInfoDto = videoInfoMapper.getUserCountInfo(userId);
+        userInfo.setLikeCount(countInfoDto.getLikeCount());
+        userInfo.setPlayCount(countInfoDto.getPlayCount());
         long fansCount = userFocusService.count(Wrappers.lambdaQuery(UserFocus.class).eq(UserFocus::getFocusUserId, userId));
         long focusCount = userFocusService.count(Wrappers.lambdaQuery(UserFocus.class).eq(UserFocus::getUserId, userId));
         userInfo.setFocusCount((int) focusCount);
         userInfo.setFansCount((int) fansCount);
-        if (currentUserId == null){
+
+        if (currentUserId == null) {
             userInfo.setHavaFocus(false);
         } else {
             LambdaQueryWrapper<UserFocus> queryWrapper = Wrappers.lambdaQuery(UserFocus.class).
-                    eq(UserFocus::getFocusUserId, userId ).
+                    eq(UserFocus::getFocusUserId, userId).
                     eq(UserFocus::getUserId, currentUserId);
             UserFocus userFocus = userFocusService.getOne(queryWrapper);
             userInfo.setHavaFocus(userFocus != null);
@@ -185,7 +195,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         user.setLastLoginIp(ip);
         //更新用户信息
         this.updateById(user);
-        // todo 可能要更新redis
         //设置token，返回给前端
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         user.setToken(tokenInfo.getTokenValue());
@@ -298,21 +307,44 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return queryWrapper;
     }
 
+    @Override
+    public UserCountInfoDto getUserCountInfo(String userId) {
+        UserInfo userInfo = getById(userId);
+        Integer focusCount = (int) userFocusService.count(new QueryWrapper<UserFocus>().eq("userId", userId));
+        Integer fansCount = (int) userFocusService.count(new QueryWrapper<UserFocus>().eq("focusUserId", userId));
+        Integer currentCoinCount = userInfo.getCurrentCoinCount();
+        UserCountInfoDto userCountInfoDto = new UserCountInfoDto();
+        userCountInfoDto.setCurrentCoinCount(currentCoinCount);
+        userCountInfoDto.setFansCount(fansCount);
+        userCountInfoDto.setFocusCount(focusCount);
+        return userCountInfoDto;
+    }
+
+    @Override
+    public void changeUserStatus(String userId, Integer status) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setStatus(status);
+        userInfo.setUserId(userId);
+        boolean b = this.updateById(userInfo);
+        if (!b) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新失败");
+        }
+    }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateUserInfo(UserInfo updateUserInfo) {
         UserInfo oldUser = this.getById(updateUserInfo.getUserId());
-        if (!oldUser.getNickName().equals(updateUserInfo.getNickName()) && oldUser.getCurrentCoinCount() < 5){
+        if (!oldUser.getNickName().equals(updateUserInfo.getNickName()) && oldUser.getCurrentCoinCount() < 5) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "硬币不足");
         }
-        if (!oldUser.getNickName().equals(updateUserInfo.getNickName())){
+        if (!oldUser.getNickName().equals(updateUserInfo.getNickName())) {
             UpdateWrapper<UserInfo> userUpdateWrapper = new UpdateWrapper<>();
             int newCoinCount = oldUser.getCurrentCoinCount() - 5;
             userUpdateWrapper.set("currentCoinCount", newCoinCount);
             boolean b = this.update(userUpdateWrapper);
-            if (!b){
+            if (!b) {
                 throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新失败");
             }
         }

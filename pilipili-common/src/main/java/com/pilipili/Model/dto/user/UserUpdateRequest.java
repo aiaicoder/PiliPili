@@ -15,27 +15,12 @@ public class UserUpdateRequest implements Serializable {
     /**
      * id
      */
-    private Long id;
-
-    /**
-     * 用户昵称
-     */
-    private String userName;
-
-    /**
-     * 用户头像
-     */
-    private String userAvatar;
-
-    /**
-     * 简介
-     */
-    private String userProfile;
+    private String userId;
 
     /**
      * 用户角色：user/admin/ban
      */
-    private String userRole;
+    private Integer status;
 
 
 

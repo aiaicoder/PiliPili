@@ -1,12 +1,16 @@
 package com.pilipili.Model.entity;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.pilipili.Model.dto.Comment.UserMessageExtendDto;
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 用户消息表
@@ -57,5 +61,26 @@ public class UserMessage implements Serializable {
     private String extendJson;
 
     @TableField(exist = false)
+    private String sendUserAvatar;
+
+    @TableField(exist = false)
+    private String sendNickName;
+
+    @TableField(exist = false)
+    private String videoName;
+
+    @TableField(exist = false)
+    private String videoCover;
+
+    @TableField(exist = false)
+    private UserMessageExtendDto userMessageExtendDto;
+
+    public UserMessageExtendDto getUserMessageExtendDto() {
+        return StringUtils.isNotBlank(extendJson) ? JSONUtil.toBean(extendJson, UserMessageExtendDto.class) : new UserMessageExtendDto();
+    }
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+
 }

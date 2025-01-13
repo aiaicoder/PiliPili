@@ -11,8 +11,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # 数据库配置
-  # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://10.101.100.2:3306/pilipili?serverTimezone=UTC&useSSL=false
@@ -26,8 +24,6 @@ spring:
       max-lifetime: 1000000
       connection-timeout: 10000
       connection-test-query: SELECT 1
-    # Redis 配置
-    # todo 需替换配置，然后取消注释
   redis:
     database: 0
     host: 10.101.100.2
@@ -45,7 +41,6 @@ spring:
           # 连接池中的最小空闲连接
           min-idle: 0
   # Elasticsearch 配置
-  # todo 需替换配置，然后取消注释
   elasticsearch:
     uris: http://10.101.100.2:9200
   #    username: root
@@ -74,14 +69,6 @@ mybatis-plus:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
-# 对象存储
-# todo 需替换配置
-cos:
-  client:
-    accessKey: xxx
-    secretKey: xxx
-    region: xxx
-    bucket: xxx
 
 # 接口文档配置
 knife4j:
@@ -102,5 +89,21 @@ project:
 admin:
   account: 112@qq.com
   password: 12345678
+
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: pilipili-admin
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 86400
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: false
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: random-64
+  # 是否输出操作日志
+  is-log: true
 
 

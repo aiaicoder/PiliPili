@@ -1,7 +1,10 @@
 package com.pilipili.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author <a href="https://github.com/aiaicoder">  小新
@@ -27,4 +30,22 @@ public class DateUtils {
             return null;
         }
     }
+
+
+    public static String getBeforeDate(Integer day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -day);
+        return new SimpleDateFormat(YYYY_MM_DD).format(calendar.getTime());
+    }
+
+    public  static List<String> getBeforeDateList(Integer day) {
+        List<String> list = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        for (int i = 0; i < day; i++) {
+            calendar.add(Calendar.DATE, -i);
+            list.add(new SimpleDateFormat(YYYY_MM_DD).format(calendar.getTime()));
+        }
+        return list;
+    }
+
 }
